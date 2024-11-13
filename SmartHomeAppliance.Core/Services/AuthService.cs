@@ -43,7 +43,7 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
-            var token = jwtService.GenerateToken(user.Id); // Include user roles and other claims if needed
+            var token = await jwtService.GenerateTokenAsync(user.Id); // Include user roles and other claims if needed
 
             apiResponse.StatusCode = 200;
             apiResponse.Result = new

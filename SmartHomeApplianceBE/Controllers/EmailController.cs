@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAppliance.Infrastructure.Data.Models;
+using static SmartHomeAppliance.Common.CustomErrors.GlobalErrors;
 
 namespace Controllers
 {
@@ -24,7 +25,7 @@ namespace Controllers
             var user = await userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return BadRequest("Invalid user.");
+                return BadRequest(UserNotFound);
             }
 
             var result = await userManager.ConfirmEmailAsync(user, token);

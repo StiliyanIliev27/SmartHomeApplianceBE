@@ -6,5 +6,6 @@
         public int StatusCode { get; set; }
         public ICollection<string> ErrorMessages { get; set; } = new HashSet<string>();
         public object Result { get; set; } = default!;
+        public string Message { get; set; } = string.Empty;
     }
 }
