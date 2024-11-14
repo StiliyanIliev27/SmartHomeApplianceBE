@@ -21,14 +21,44 @@ namespace SmartHomeAppliance.Core.Services
             this.logger = logger;
             apiResponse = new ApiResponse();
         }
-        public async Task<ApiResponse> AllProductsAsync()
+        public async Task<ApiResponse> AllProductsByFilterAsync(string? category, 
+            decimal? minPrice, decimal? maxPrice, string? searchTerm, int page = 1, int pageSize = 10)
         {
             logger.LogInformation("AllProductsAsync has been called");
 
-            var products = await repository.AllReadOnly<Product>().ToListAsync();
-            if(!products.Any())
+            var query = repository.AllReadOnly<Product>().AsQueryable();
+
+            if (!string.IsNullOrEmpty(category))
             {
-                apiResponse.ErrorMessages.Add("No available products have been found!");
+                query = query.Where(p => p.Category.ToString() == category);
+            }
+
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm));
+            }
+
+            // Pagination
+            var totalItems = await query.CountAsync();
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            if (!products.Any())
+            {
+                apiResponse.ErrorMessages.Add("No available products with this criteria have been found!");
                 apiResponse.StatusCode = 404;
                 return apiResponse;
             }
