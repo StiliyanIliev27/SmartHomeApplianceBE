@@ -16,9 +16,11 @@ namespace SmartHomeAppliance.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> All([FromQuery] string category = "", 
+            [FromQuery] decimal? minPrice = 0, [FromQuery] decimal? maxPrice = 1000, [FromQuery] string searchTerm = "", 
+            [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var response = await productService.AllProductsAsync();
+            var response = await productService.AllProductsByFilterAsync(category, minPrice, maxPrice, searchTerm, page, pageSize);
 
             return Ok(response);
         }
