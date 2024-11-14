@@ -80,6 +80,7 @@ namespace SmartHomeAppliance.Core.Services
 
             // 3. Create the user in the database first
             var result = await userManager.CreateAsync(user, registerModel.Password);
+            await userManager.AddToRoleAsync(user, "User");
 
             if (!result.Succeeded)
             {

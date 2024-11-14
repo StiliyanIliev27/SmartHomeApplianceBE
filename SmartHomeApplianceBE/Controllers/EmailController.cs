@@ -20,7 +20,7 @@ namespace Controllers
 
 
         [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(string token, string userId)
+        public async Task<IActionResult> ConfirmEmail([FromQuery]string token, [FromQuery]string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
             if (user == null)
