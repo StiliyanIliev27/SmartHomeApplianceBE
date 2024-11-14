@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using SmartHomeAppliance.Core.Contracts;
-using SmartHomeAppliance.Core.Models.DTOs;
+using SmartHomeAppliance.Core.Models.DTOs.Auth;
 using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 

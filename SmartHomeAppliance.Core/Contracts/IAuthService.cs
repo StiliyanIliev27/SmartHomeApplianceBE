@@ -1,4 +1,4 @@
-﻿using SmartHomeAppliance.Core.Models.DTOs;
+﻿using SmartHomeAppliance.Core.Models.DTOs.Auth;
 using SmartHomeAppliance.Core.Models.Responses;
 
 namespace SmartHomeAppliance.Core.Contracts

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartHomeAppliance.Core.Models.DTOs
+namespace SmartHomeAppliance.Core.Models.DTOs.Auth
 {
     public class RegisterDTO
     {

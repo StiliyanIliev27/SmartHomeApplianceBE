@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAppliance.Core.Contracts;
-using SmartHomeAppliance.Core.Models.DTOs;
+using SmartHomeAppliance.Core.Models.DTOs.Auth;
 
 namespace SmartHomeAppliance.API.Controllers
 {
