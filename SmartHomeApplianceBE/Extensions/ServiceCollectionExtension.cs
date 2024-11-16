@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.DTOs.Product;
 using SmartHomeAppliance.Core.Services;
 using SmartHomeAppliance.Infrastructure.Common;
 using SmartHomeAppliance.Infrastructure.Data;
 using SmartHomeAppliance.Infrastructure.Data.Models;
+using Stripe;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection 
@@ -19,7 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAdminService, AdminService>();
-            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductService, SmartHomeAppliance.Core.Services.ProductService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             return services;
         }
@@ -31,6 +35,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.UseSqlServer(connectionString));
 
             services.AddScoped<IRepository, Repository>();
+
+            services.Configure<StripeSettings>(config.GetSection("Stripe"));
+            StripeConfiguration.ApiKey = config["Stripe:SecretKey"];
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
 
             return services;
         }
