@@ -30,15 +30,15 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
-            var cart = await GetCartByUserIdPrivateAsync(userId);
+            var cart = await GetCartAsync(userId);
             if(cart is null)
             {
                 cart = new Cart { UserId = userId };
                 await repository.AddAsync(cart);
             }
             
-            var existingCartProduct = await repository.AllReadOnly<CartProduct>()
-                .Where(cp => cp.ProductId == addProductToCartDto.ProductId && cp.CartId == cart.CartId).FirstOrDefaultAsync();
+            var existingCartProduct = await repository.AllReadOnly<CartsProduct>()
+                .Where(cp => cp.ProductId == addProductToCartDto.ProductId && cp.CartId == cart.Id.ToString()).FirstOrDefaultAsync();
 
             if (existingCartProduct != null)
             {
@@ -51,9 +51,9 @@ namespace SmartHomeAppliance.Core.Services
             }
             else
             {
-                var cartProduct = new CartProduct
+                var cartProduct = new CartsProduct
                 {
-                    CartId = cart.CartId,
+                    CartId = cart.Id.ToString(),
                     ProductId = addProductToCartDto.ProductId,
                     Quantity = addProductToCartDto.Quantity,
                     Price = product.Price
@@ -80,8 +80,8 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
-            var cartProducts = await repository.All<CartProduct>()
-                .Where(cp => cp.CartId == cart.CartId).ToListAsync();
+            var cartProducts = await repository.All<CartsProduct>()
+                .Where(cp => cp.CartId == cart.Id.ToString()).ToListAsync();
            
             foreach(var cartProduct in cartProducts)
                 repository.Delete(cartProduct);
@@ -90,15 +90,14 @@ namespace SmartHomeAppliance.Core.Services
             await repository.SaveChangesAsync();
 
             apiResponse.StatusCode = 200;
-            apiResponse.Message = $"Cart with id: {cart.CartId} successfully removed.";
+            apiResponse.Message = $"Cart with id: {cart.Id} successfully removed.";
             apiResponse.IsSuccess = true;
             return apiResponse;
         }
 
-        private async Task<Cart> GetCartByUserIdPrivateAsync(string userId)
+        public async Task<Cart?> GetCartAsync(string userId)
         {
-            return await repository.AllReadOnly<Cart>().FirstOrDefaultAsync(c => c.UserId == userId)
-                ?? throw new ArgumentException("Cart for particular user was not found");
+            return await repository.AllReadOnly<Cart>().FirstOrDefaultAsync(c => c.UserId == userId);
         }
         public async Task<ApiResponse> GetCartByUserIdAsync(string userId)
         {
@@ -113,8 +112,8 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
-            var cartProducts = await repository.AllReadOnly<CartProduct>()
-                .Where(cp => cp.CartId == cart.CartId)
+            var cartProducts = await repository.AllReadOnly<CartsProduct>()
+                .Where(cp => cp.CartId == cart.Id.ToString())
                 .Include(cp => cp.Product)
                 .ToListAsync();
 
@@ -124,7 +123,6 @@ namespace SmartHomeAppliance.Core.Services
             {
                 cartProductsDto.Add(new CartProductDto()
                 {
-                    Id = cartProduct.Id.ToString(),
                     ProductId = cartProduct.ProductId.ToString(),
                     Price = cartProduct.Price,
                     ProductName = cartProduct.Product.Name,
@@ -147,13 +145,13 @@ namespace SmartHomeAppliance.Core.Services
             apiResponse.StatusCode = 200;
             apiResponse.Result = responseObject;
             apiResponse.IsSuccess = true;
-            apiResponse.Message = $"Cart with an id: {cart.CartId} for user with id: {userId}";
+            apiResponse.Message = $"Cart with an id: {cart.Id} for user with id: {userId}";
             return apiResponse;
         }
 
         public async Task<ApiResponse> RemoveCartProductAsync(string cartProductId)
         {
-            var cartProduct = await repository.All<CartProduct>().FirstOrDefaultAsync(c => c.ProductId.ToString() == cartProductId);
+            var cartProduct = await repository.All<CartsProduct>().FirstOrDefaultAsync(c => c.ProductId.ToString() == cartProductId);
             if (cartProduct is null)
             {
                 apiResponse.ErrorMessages.Add("No product was not found for the particular cart.");
@@ -182,8 +180,8 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
           
-            var cartProduct = await repository.All<CartProduct>()
-                .FirstOrDefaultAsync(c => c.ProductId == updateProductToCarDto.ProductId && c.CartId == cart.CartId);
+            var cartProduct = await repository.All<CartsProduct>()
+                .FirstOrDefaultAsync(c => c.ProductId == updateProductToCarDto.ProductId && c.CartId == cart.Id.ToString());
             if (cartProduct is null)
             {
                 apiResponse.ErrorMessages.Add("No product was not found for the particular cart.");

@@ -6,7 +6,7 @@ namespace SmartHomeAppliance.Core.Contracts
 {
     public interface IProductService
     {
-        Task<Product> GetProductByIdAsync(Guid productId);
+        Task<Product> GetProductByIdAsync(string productId);
         Task<ApiResponse> AllProductsByFilterAsync(string? category, 
             decimal? minPrice, decimal? maxPrice, 
             string? searchTerm, 

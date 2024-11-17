@@ -32,7 +32,7 @@ public class OrderController : BaseController
     public async Task<IActionResult> Checkout()
     {
         // Fetch user's cart
-        var cart = await cartService.GetCartByUserIdAsync(UserId);
+        var cart = await cartService.GetCartAsync(UserId);
         if (cart == null)
         {
             return BadRequest(new { message = "Your cart is empty." });
@@ -57,7 +57,7 @@ public class OrderController : BaseController
         {
             clientSecret = await paymentService.CreatePaymentIntentAsync(
                 order.TotalPrice,
-                new Dictionary<string, string> { { "order_id", order.Id.ToString() } }
+                new Dictionary<string, string> { { "order_id", order.OrderId.ToString() } }
             );
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ public class OrderController : BaseController
         // Clear the cart
         try
         {
-            await cartService.RemoveCartAsync((cart.Result as Cart)!.UserId);
+            await cartService.RemoveCartAsync(cart.UserId);
         }
         catch (Exception ex)
         {
@@ -78,7 +78,7 @@ public class OrderController : BaseController
         // Return the client secret for frontend payment processing
         return Ok(new
         {
-            orderId = order.Id,
+            orderId = order.OrderId,
             clientSecret = clientSecret
         });
     }
@@ -96,7 +96,8 @@ public class OrderController : BaseController
             stripeEvent = EventUtility.ConstructEvent(
                 json,
                 Request.Headers["Stripe-Signature"],
-                webhookSecret
+                webhookSecret, 
+                throwOnApiVersionMismatch: false
             );
         }
         catch (StripeException e)
@@ -111,7 +112,7 @@ public class OrderController : BaseController
                 var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
                 if (paymentIntent != null)
                 {
-                    var orderId = Guid.Parse(paymentIntent.Metadata["order_id"]);
+                    var orderId = paymentIntent.Metadata["order_id"];
                     await orderService.UpdateOrderStatusAsync(orderId, Status.Completed);
                 }
                 break;
@@ -120,7 +121,7 @@ public class OrderController : BaseController
                 var failedPaymentIntent = stripeEvent.Data.Object as PaymentIntent;
                 if (failedPaymentIntent != null)
                 {
-                    var orderId = Guid.Parse(failedPaymentIntent.Metadata["order_id"]);
+                    var orderId = failedPaymentIntent.Metadata["order_id"];
                     await orderService.UpdateOrderStatusAsync(orderId, Status.Cancelled);
                 }
                 break;

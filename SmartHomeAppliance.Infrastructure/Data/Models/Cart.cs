@@ -7,11 +7,11 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
     {
         public Cart()
         {
-            CartId = Guid.NewGuid();
+            Id = Guid.NewGuid().ToString();
         }
 
         [Key]
-        public Guid CartId { get; set; }
+        public string Id { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [Required]

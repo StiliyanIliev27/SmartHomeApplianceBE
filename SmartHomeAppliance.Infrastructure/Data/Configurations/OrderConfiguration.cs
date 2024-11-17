@@ -8,7 +8,13 @@ namespace SmartHomeAppliance.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasKey(o => new { o.Id, o.UserId });
+            builder.HasKey(o => new { o.OrderId, o.UserId });
+
+            builder
+                .HasOne(o => o.User)
+                .WithMany()  // One User can have many Orders
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

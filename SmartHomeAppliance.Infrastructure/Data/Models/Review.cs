@@ -7,11 +7,11 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
     {
         public Review()
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid().ToString();
         }
 
         [Required]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [ForeignKey(nameof(ProductId))]
@@ -19,7 +19,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         public Product? Product { get; set; }
 
         [Required]
-        [ForeignKey(nameof(ProductId))]
+        [ForeignKey(nameof(UserId))]
         public string UserId { get; set; } = null!;
         public ApplicationUser? User { get; set; }
 

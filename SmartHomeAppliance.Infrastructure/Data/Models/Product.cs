@@ -8,9 +8,9 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
     {
         public Product()
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid().ToString();
         }
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         public string Name { get; set; } = null!;
@@ -37,5 +37,6 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
 
         [Required]
         public int StockQuantity { get; set; }
+        public List<OrdersProducts> OrdersProducts { get; set; } = new List<OrdersProducts>();
     }
 }

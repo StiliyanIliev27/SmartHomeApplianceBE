@@ -4,12 +4,12 @@ using SmartHomeAppliance.Infrastructure.Data.Models;
 
 namespace SmartHomeAppliance.Infrastructure.Data.Configurations
 {
-    internal class CartProductConfiguration : IEntityTypeConfiguration<CartProduct>
+    internal class CartProductConfiguration : IEntityTypeConfiguration<CartsProduct>
     {
-        public void Configure(EntityTypeBuilder<CartProduct> builder)
+        public void Configure(EntityTypeBuilder<CartsProduct> builder)
         {
             builder
-                .HasKey(ci => new { ci.CartId, ci.ProductId, ci.Id });
+                .HasKey(ci => new { ci.CartId, ci.ProductId });
         }
     }
 }

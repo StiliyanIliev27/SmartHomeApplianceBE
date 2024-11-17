@@ -8,17 +8,16 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
     {
         public Order()
         {
-            Id = Guid.NewGuid();
+            OrderId = Guid.NewGuid().ToString();
         }
-        public Guid Id { get; set; }
+
+        [Key]
+        public string OrderId { get; set; }
 
         [Required]
         [ForeignKey(nameof(UserId))]
         public string UserId { get; set; } = null!;
         public ApplicationUser? User { get; set; }
-
-        [Required]
-        public int Quantity { get; set; }
 
         [Required]
         public decimal TotalPrice { get; set; }
@@ -29,6 +28,6 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         [Required]
         public DateTime OrderDate { get; set; }
 
-        public List<OrderProduct> Products { get; set; } = new();
+        public List<OrdersProducts> OrdersProducts { get; set; } = new();
     }
 }

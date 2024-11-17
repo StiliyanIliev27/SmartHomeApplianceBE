@@ -29,46 +29,54 @@ namespace SmartHomeAppliance.Core.Services
             }
 
             // Retrieve the cart for the user
-            var cartItems = await repository.All<CartProduct>()
-                .Where(ci => ci.CartId == cart.CartId)
-                .Include(ci => ci.Product) // Include product details
+            var cartProducts = await repository.All<CartsProduct>()
+                .Where(ci => ci.CartId == cart.Id.ToString())
+                .Include(ci => ci.Product)
+                .Include(ci => ci.Cart)
                 .ToListAsync();
 
-            if (!cartItems.Any())
+            if (!cartProducts.Any())
             {
                 apiResponse.ErrorMessages.Add($"Cart is empty. Cannot create an order.");
                 apiResponse.StatusCode = 400;
                 apiResponse.IsSuccess = false;
                 return apiResponse;
-            }
+            }    
 
             // Calculate total price
-            var totalPrice = cartItems.Sum(ci => ci.Quantity * ci.Product.Price);
+            var totalPrice = cartProducts.Sum(ci => ci.Quantity * ci.Product.Price);
 
             // Create a new order
             var newOrder = new Order
-            {
-                UserId = userId.ToString(),
+            {       
+                UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice,
                 Status = Status.Pending,
-                Products = cartItems.Select(ci => new OrderProduct
-                {
-                    ProductId = ci.ProductId,
-                    Quantity = ci.Quantity,
-                    Price = ci.Product.Price
-                }).ToList()
             };
+
+            foreach (var cartProduct in cartProducts)
+            {
+                var orderProduct = new OrdersProducts()
+                {
+                    OrderUserId = userId,
+                    UserId = cartProduct.Cart.UserId,
+                    ProductId = cartProduct.ProductId,
+                    Price = cartProduct.Price,
+                    Quantity = cartProduct.Quantity,
+                    OrderId = newOrder.OrderId.ToString()
+                };
+                await repository.AddAsync(orderProduct);
+            }
 
             // Add the order to the repository
             await repository.AddAsync(newOrder);
 
             // Remove cart items since they are now part of the order
-            foreach(var product in cartItems)
+            foreach(var cartProduct in cartProducts)
             {
-                repository.Delete(product);
+                repository.Delete(cartProduct);
             }
-
             // Save changes
             await repository.SaveChangesAsync();
 
@@ -78,14 +86,14 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
-        public async Task<Order?> GetOrderByIdAsync(Guid orderId)
+        public async Task<Order?> GetOrderByIdAsync(string orderId)
         {
             return await repository.GetByIdAsync<Order>(orderId);
         }
 
-        public async Task UpdateOrderStatusAsync(Guid orderId, Status status)
+        public async Task UpdateOrderStatusAsync(string orderId, Status status)
         {
-            var order = await repository.All<Order>().Where(o => o.Id == orderId).FirstOrDefaultAsync();
+            var order = await repository.All<Order>().Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) throw new KeyNotFoundException("Order not found");
 
             order.Status = status;

@@ -132,8 +132,8 @@ namespace SmartHomeAppliance.Core.Services
                 logger.LogInformation($"All reviews for product with Id: {productId} have been deleted successfully.");
             }
 
-            var cartProducts = await repository.All<CartProduct>()
-                .Where(o => o.ProductId == Guid.Parse(productId)).ToListAsync();
+            var cartProducts = await repository.All<CartsProduct>()
+                .Where(o => o.ProductId == productId).ToListAsync();
 
             if (!cartProducts.Any())
                 logger.LogInformation($"No products in any carts were found for product with Id: {productId}");
@@ -154,7 +154,7 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
-        public async Task<Product> GetProductByIdAsync(Guid productId)
+        public async Task<Product> GetProductByIdAsync(string productId)
         {
             return await repository.GetByIdAsync<Product>(productId) ?? throw new ArgumentException("Product was not found.");
         }
