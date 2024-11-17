@@ -18,11 +18,6 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         public ApplicationUser? User { get; set; }
 
         [Required]
-        [ForeignKey(nameof(ProductId))]
-        public string ProductId { get; set; } = null!;
-        public Product? Product { get; set; }
-
-        [Required]
         public int Quantity { get; set; }
 
         [Required]
@@ -33,5 +28,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
 
         [Required]
         public DateTime OrderDate { get; set; }
+
+        public List<OrderProduct> Products { get; set; } = new();
     }
 }

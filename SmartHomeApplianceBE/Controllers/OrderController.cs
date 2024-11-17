@@ -1,77 +1,135 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using SmartHomeAppliance.API.Controllers;
 using SmartHomeAppliance.Core.Contracts;
-using SmartHomeAppliance.Core.Models.DTOs.Order;
-using SmartHomeAppliance.Core.Services;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
+using SmartHomeAppliance.Infrastructure.Data.Models;
 using Stripe;
 
-namespace SmartHomeAppliance.API.Controllers
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class OrderController : BaseController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class OrderController : ControllerBase
-    {
-        private readonly IOrderService orderService;
-        private readonly IPaymentService paymentService;
-        private readonly ILogger<OrderController> logger;
-        private readonly string webhookSecret;
+    private readonly IOrderService orderService;
+    private readonly IPaymentService paymentService;
+    private readonly ICartService cartService;
+    private readonly string webhookSecret;
 
-        public OrderController(IOrderService orderService, IPaymentService paymentService, IConfiguration configuration, ILogger<OrderController> logger)
+    public OrderController(
+        IOrderService orderService,
+        IPaymentService paymentService,
+        ICartService cartService,
+        IConfiguration configuration)
+    {
+        this.orderService = orderService;
+        this.paymentService = paymentService;
+        this.cartService = cartService;
+        webhookSecret = configuration["Stripe:WebhookSecret"]!;
+    }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> Checkout()
+    {
+        // Fetch user's cart
+        var cart = await cartService.GetCartByUserIdAsync(UserId);
+        if (cart == null)
         {
-            this.orderService = orderService;
-            this.paymentService = paymentService;
-            webhookSecret = configuration["Stripe:WebhookSecret"]!;
-            this.logger = logger;
+            return BadRequest(new { message = "Your cart is empty." });
         }
 
-        [HttpPost("create-order")]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderRequestDto orderRequestDto)
+        // Create an order from the cart
+        var orderResponse = await orderService.CreateOrderFromCartAsync(UserId);
+        if (!orderResponse.IsSuccess)
         {
-            var order = await orderService.CreateOrderAsync(orderRequestDto.UserId, orderRequestDto.ProductId, orderRequestDto.Quantity);
+            return BadRequest(new { message = string.Join(", ", orderResponse.ErrorMessages) });
+        }
 
-            var paymentIntent = await paymentService.CreatePaymentIntentAsync(
+        var order = orderResponse.Result as Order;
+        if (order == null)
+        {
+            return StatusCode(500, new { message = "Failed to create order. Please try again." });
+        }
+
+        // Create a payment intent
+        string clientSecret;
+        try
+        {
+            clientSecret = await paymentService.CreatePaymentIntentAsync(
                 order.TotalPrice,
                 new Dictionary<string, string> { { "order_id", order.Id.ToString() } }
             );
-
-            return Ok(new { clientSecret = paymentIntent });
         }
-
-        [HttpPost("stripe-webhook")]
-        [AllowAnonymous]
-        public async Task<IActionResult> StripeWebhook()
+        catch (Exception ex)
         {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-
-            var stripeEvent = EventUtility.ConstructEvent(
-                json,
-                Request.Headers["Stripe-Signature"], 
-                webhookSecret,
-                throwOnApiVersionMismatch: false);
-
-            // Handle the event
-            if (stripeEvent.Type == "payment_intent.succeeded")
-            {
-                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-
-                if (paymentIntent == null)
-                {
-                    return BadRequest();
-                }
-                // Fulfill the purchase...
-                await orderService.UpdateOrderStatusAsync(Guid.Parse(paymentIntent.Metadata["order_id"]), Status.Completed);
-            }
-            else
-            {
-                logger.LogWarning("Unhandled event type: {0}", stripeEvent.Type);
-            }
-
-            return Ok();
+            return StatusCode(500, new { message = "Failed to create payment intent.", error = ex.Message });
         }
 
+        // Clear the cart
+        try
+        {
+            await cartService.RemoveCartAsync((cart.Result as Cart)!.UserId);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Failed to clear the cart.", error = ex.Message });
+        }
 
+        // Return the client secret for frontend payment processing
+        return Ok(new
+        {
+            orderId = order.Id,
+            clientSecret = clientSecret
+        });
+    }
+
+
+    [HttpPost("stripe-webhook")]
+    [AllowAnonymous]
+    public async Task<IActionResult> StripeWebhook()
+    {
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+        Event stripeEvent;
+        try
+        {
+            stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                webhookSecret
+            );
+        }
+        catch (StripeException e)
+        {
+            return BadRequest($"Stripe Webhook Error: {e.Message}");
+        }
+
+        // Handle the event
+        switch (stripeEvent.Type)
+        {
+            case "payment_intent.succeeded":
+                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                if (paymentIntent != null)
+                {
+                    var orderId = Guid.Parse(paymentIntent.Metadata["order_id"]);
+                    await orderService.UpdateOrderStatusAsync(orderId, Status.Completed);
+                }
+                break;
+
+            case "payment_intent.payment_failed":
+                var failedPaymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                if (failedPaymentIntent != null)
+                {
+                    var orderId = Guid.Parse(failedPaymentIntent.Metadata["order_id"]);
+                    await orderService.UpdateOrderStatusAsync(orderId, Status.Cancelled);
+                }
+                break;
+
+            default:
+                Console.WriteLine($"Unhandled event type: {stripeEvent.Type}");
+                break;
+        }
+
+        return Ok();
     }
 }

@@ -105,7 +105,6 @@ namespace SmartHomeAppliance.Core.Services
             apiResponse.Result = product;
             apiResponse.Message = $"Procuct has been successfully created with Id: {product.Id}";
             return apiResponse;
-
         }
 
         public async Task<ApiResponse> DeleteProductAsync(string productId)
@@ -133,16 +132,16 @@ namespace SmartHomeAppliance.Core.Services
                 logger.LogInformation($"All reviews for product with Id: {productId} have been deleted successfully.");
             }
 
-            var orders = await repository.All<Order>()
-                .Where(o => o.ProductId == productId).ToListAsync();
+            var cartProducts = await repository.All<CartProduct>()
+                .Where(o => o.ProductId == Guid.Parse(productId)).ToListAsync();
 
-            if (!orders.Any())
-                logger.LogInformation($"No orders were found for product with Id: {productId}");
+            if (!cartProducts.Any())
+                logger.LogInformation($"No products in any carts were found for product with Id: {productId}");
             else
             {
-                foreach (var order in orders)
-                    repository.Delete(order);
-                logger.LogInformation($"All orders for product with Id: {productId} have been deleted successfully.");
+                foreach (var cartProduct in cartProducts)
+                    repository.Delete(cartProduct);
+                logger.LogInformation($"All carts with product with Id: {productId} have been deleted successfully.");
             }
 
 
@@ -153,6 +152,11 @@ namespace SmartHomeAppliance.Core.Services
             apiResponse.StatusCode = 204;
             apiResponse.IsSuccess = true;
             return apiResponse;
+        }
+
+        public async Task<Product> GetProductByIdAsync(Guid productId)
+        {
+            return await repository.GetByIdAsync<Product>(productId) ?? throw new ArgumentException("Product was not found.");
         }
 
         public async Task<ApiResponse> UpdateProductAsync(UpdateProductDto updatedProductDto)

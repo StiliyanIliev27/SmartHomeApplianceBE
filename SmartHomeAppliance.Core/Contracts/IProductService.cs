@@ -1,10 +1,12 @@
 ﻿using SmartHomeAppliance.Core.Models.DTOs.Product;
 using SmartHomeAppliance.Core.Models.Responses;
+using SmartHomeAppliance.Infrastructure.Data.Models;
 
 namespace SmartHomeAppliance.Core.Contracts
 {
     public interface IProductService
     {
+        Task<Product> GetProductByIdAsync(Guid productId);
         Task<ApiResponse> AllProductsByFilterAsync(string? category, 
             decimal? minPrice, decimal? maxPrice, 
             string? searchTerm, 

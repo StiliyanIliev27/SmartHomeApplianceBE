@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartHomeAppliance.Infrastructure.Data.Models
 {
-    public class CartProduct
+    public class OrderProduct
     {
-        public CartProduct()
+        public OrderProduct()
         {
             Id = Guid.NewGuid();
         }
@@ -13,17 +13,14 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(CartId))]
+        [ForeignKey(nameof(OrderId))]
         [Required]
-        public Guid CartId { get; set; }
-
-        public Cart Cart { get; set; } = null!;
+        public Guid OrderId { get; set; }
 
         [ForeignKey(nameof(ProductId))]
         [Required]
         public Guid ProductId { get; set; }
-
-        public Product Product { get; set; } = null!;
+        public Product Product { get; set; } = null!; // Navigation property
 
         [Required]
         public int Quantity { get; set; }

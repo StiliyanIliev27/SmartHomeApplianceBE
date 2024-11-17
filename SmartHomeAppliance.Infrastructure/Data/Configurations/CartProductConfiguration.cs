@@ -9,7 +9,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<CartProduct> builder)
         {
             builder
-                .HasKey(ci => new { ci.CartId, ci.ProductId });
+                .HasKey(ci => new { ci.CartId, ci.ProductId, ci.Id });
         }
     }
 }

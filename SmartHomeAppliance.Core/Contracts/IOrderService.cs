@@ -1,11 +1,12 @@
-﻿using SmartHomeAppliance.Infrastructure.Data.Enums;
+﻿using SmartHomeAppliance.Core.Models.Responses;
+using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 
 namespace SmartHomeAppliance.Core.Contracts
 {
     public interface IOrderService
     {
-        Task<Order> CreateOrderAsync(string userId, Guid productId, int quantity);
+        Task<ApiResponse> CreateOrderFromCartAsync(string userId);
         Task<Order?> GetOrderByIdAsync(Guid orderId);
         Task UpdateOrderStatusAsync(Guid orderId, Status status);
     }

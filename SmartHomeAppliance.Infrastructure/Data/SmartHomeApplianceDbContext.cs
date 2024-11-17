@@ -14,6 +14,7 @@ namespace SmartHomeAppliance.Infrastructure.Data
         public DbSet<Cart> Carts { get; set; } = null!;
         public DbSet<CartProduct> CartProducts { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<OrderProduct> OrderProducts { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -21,6 +22,7 @@ namespace SmartHomeAppliance.Infrastructure.Data
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new CartProductConfiguration());
             builder.ApplyConfiguration(new OrderConfiguration());
+            builder.ApplyConfiguration(new OrderProductConfiguration());
             builder.ApplyConfiguration(new ReviewConfiguration());
             builder.ApplyConfiguration(new RolesConfiguration());
             builder.ApplyConfiguration(new UsersConfiguration());

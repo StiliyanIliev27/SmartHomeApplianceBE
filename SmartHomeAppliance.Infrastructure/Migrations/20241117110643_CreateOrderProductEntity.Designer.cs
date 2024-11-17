@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartHomeAppliance.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SmartHomeAppliance.Infrastructure.Data;
 namespace SmartHomeAppliance.Infrastructure.Migrations
 {
     [DbContext(typeof(SmartHomeApplianceDbContext))]
-    partial class SmartHomeApplianceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241117110643_CreateOrderProductEntity")]
+    partial class CreateOrderProductEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,24 +262,24 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         {
                             Id = "27d78708-8671-4b05-bd5e-17aa91392224",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5950286c-b07c-4296-997f-004a95144e6a",
+                            ConcurrencyStamp = "27424fea-50e9-4e2c-829e-cd6b6c3fae0a",
                             Email = "admin@smarthomeapp.bg",
                             EmailConfirmed = true,
                             FirstName = "Admin",
                             LastName = "Adminov",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@SMARTHOMEAPP.BG",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMcxc35XxvE4iTTd6nBbJGfUHYde6wxebzHGvVppygrbUZP9pwGnhy6rInpQhy82gA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDZx7OA7Ce2iutblIzxyd/M3lYSYLxkekZax0sHZHAm5NMwo1P0d0EjVQstXpMBkCw==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                            SecurityStamp = "040b6d1e-76d9-4ccd-9ac9-107e2eb91007",
+                            SecurityStamp = "ace4f6de-7d99-46e1-92cc-577cf598328d",
                             TwoFactorEnabled = false
                         });
                 });
 
             modelBuilder.Entity("SmartHomeAppliance.Infrastructure.Data.Models.Cart", b =>
                 {
-                    b.Property<Guid>("CartId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -285,11 +288,9 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CartId");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Carts");
                 });
@@ -302,16 +303,13 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("CartId", "ProductId", "Id");
+                    b.HasKey("CartId", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -353,9 +351,6 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("OrderUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -366,7 +361,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductId", "OrderId", "Id");
+                    b.HasKey("ProductId", "OrderId");
 
                     b.HasIndex("OrderId", "OrderUserId");
 
@@ -416,10 +411,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7c90d8b4-9fec-470e-8db1-624db5083b4f"),
+                            Id = new Guid("80be8554-b3a6-4d9e-a093-d542ca32eb6a"),
                             Category = 0,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8251),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6711),
                             Description = "A high-definition doorbell camera with night vision and motion detection.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Doorbell+Camera",
                             Name = "Smart Doorbell Camera",
@@ -428,10 +423,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("4421832e-cda1-44bc-9cdc-367bda67cc94"),
+                            Id = new Guid("7872ac3e-ff1c-4b7f-adea-71e06d5ca505"),
                             Category = 1,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8267),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6735),
                             Description = "Color-changing LED light bulbs controllable via app or voice commands.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+LED+Light+Bulbs",
                             Name = "Smart LED Light Bulbs (4-Pack)",
@@ -440,10 +435,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("9a09d7a9-822b-4fd2-9d8d-f0547de08963"),
+                            Id = new Guid("156c6ea6-44ad-4ba5-b4f9-dce7497e79cd"),
                             Category = 2,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8270),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6737),
                             Description = "A programmable thermostat that learns your heating and cooling preferences.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=WiFi+Thermostat",
                             Name = "WiFi Thermostat",
@@ -452,10 +447,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("b36b2ab5-9250-412e-a1da-a72402f6a54d"),
+                            Id = new Guid("1900304e-ec0d-4307-aec3-290c487df08d"),
                             Category = 3,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8273),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6739),
                             Description = "Refrigerator with touch screen, interior cameras, and WiFi connectivity.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Refrigerator",
                             Name = "Smart Refrigerator",
@@ -464,10 +459,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("13f90cdf-544f-4129-92fa-6a1d6607b32f"),
+                            Id = new Guid("ddba9729-9388-4e47-b138-6213bf6269ac"),
                             Category = 4,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8389),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6774),
                             Description = "Voice-activated smart speaker with high-fidelity sound and assistant integration.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Speaker",
                             Name = "Smart Speaker",
@@ -476,10 +471,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("a0025815-e9ae-4dc5-961c-0133f8e3e930"),
+                            Id = new Guid("1098c6d7-3496-4805-b403-2ab8d4da6bcd"),
                             Category = 5,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8399),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6906),
                             Description = "Smart plug that monitors energy usage of connected devices in real-time.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Energy+Monitor+Plug",
                             Name = "Energy Monitor Plug",
@@ -488,10 +483,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("420ddd81-5c18-433b-8a3b-d5ad314da152"),
+                            Id = new Guid("4b93d674-28fc-4cd5-a5c7-a92761b3a70e"),
                             Category = 6,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8401),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6908),
                             Description = "WiFi-enabled robot vacuum with auto-charge and scheduling capabilities.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Robot+Vacuum+Cleaner",
                             Name = "Robot Vacuum Cleaner",
@@ -500,10 +495,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("deac797f-d5c8-4f4d-9234-3244f7e57b07"),
+                            Id = new Guid("698d2bcd-4c4d-4a4b-9b06-bfc8726d4b2f"),
                             Category = 7,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8404),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6910),
                             Description = "Waterproof fitness tracker with heart rate monitor and sleep tracking.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Fitness+Tracker",
                             Name = "Smart Fitness Tracker",
@@ -512,10 +507,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("02341dc4-f84b-427a-b035-2d3d2b5ad020"),
+                            Id = new Guid("152ff38e-2368-4ce4-9118-71fd732341ba"),
                             Category = 8,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8407),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6914),
                             Description = "Central hub to control and integrate all smart home devices.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Home+Hub",
                             Name = "Smart Home Hub",
@@ -524,10 +519,10 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d2a908fe-dbe1-44d8-bcac-83cd94129f3d"),
+                            Id = new Guid("11184402-6abc-4668-b2d1-6a5d8cbf9f66"),
                             Category = 9,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2024, 11, 17, 14, 15, 53, 710, DateTimeKind.Utc).AddTicks(8409),
+                            DateCreated = new DateTime(2024, 11, 17, 11, 6, 42, 134, DateTimeKind.Utc).AddTicks(6919),
                             Description = "Weather-based sprinkler system for efficient garden watering.",
                             ImageUrl = "https://via.placeholder.com/400x300.png?text=Smart+Sprinkler+System",
                             Name = "Smart Sprinkler System",
@@ -618,17 +613,6 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SmartHomeAppliance.Infrastructure.Data.Models.Cart", b =>
-                {
-                    b.HasOne("SmartHomeAppliance.Infrastructure.Data.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SmartHomeAppliance.Infrastructure.Data.Models.CartProduct", b =>
