@@ -11,12 +11,15 @@ namespace SmartHomeAppliance.Infrastructure.Data
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
         public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<Cart> Carts { get; set; } = null!;
+        public DbSet<CartProduct> CartProducts { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new ProductConfiguration());
+            builder.ApplyConfiguration(new CartProductConfiguration());
             builder.ApplyConfiguration(new OrderConfiguration());
             builder.ApplyConfiguration(new ReviewConfiguration());
             builder.ApplyConfiguration(new RolesConfiguration());
