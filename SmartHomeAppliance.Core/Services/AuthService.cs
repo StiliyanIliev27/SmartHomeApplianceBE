@@ -4,6 +4,7 @@ using SmartHomeAppliance.Core.Contracts;
 using SmartHomeAppliance.Core.Models.DTOs.Auth;
 using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Data.Models;
+using System.Web;
 
 namespace SmartHomeAppliance.Core.Services
 {
@@ -92,6 +93,7 @@ namespace SmartHomeAppliance.Core.Services
 
             // Step 4. Generate the email confirmation token
             var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
             var confirmationUrl = $"{configuration["FrontendUrl"]}/confirm-email?token={confirmationToken}&userId={user.Id}";
 
             // Step 5: Send the confirmation email
