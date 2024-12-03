@@ -17,9 +17,16 @@ namespace SmartHomeAppliance.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO registerModel)
+        public async Task<IActionResult> Register([FromForm] RegisterDTO registerModel)
         {
             var response = await authService.RegisterAsync(registerModel);
+
+            if (response.StatusCode == 400)
+                return BadRequest(response);
+
+            if (response.StatusCode == 500)
+                return StatusCode(500, response.ErrorMessages.First());
+                
 
             return Ok(response);
         }
@@ -28,6 +35,9 @@ namespace SmartHomeAppliance.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO loginModel)
         {
             var response = await authService.LoginAsync(loginModel);
+
+            if (response.StatusCode == 400)
+                return BadRequest(response);
 
             return Ok(response);
         }
