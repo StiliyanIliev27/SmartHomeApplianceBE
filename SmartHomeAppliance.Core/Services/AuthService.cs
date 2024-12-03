@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using SmartHomeAppliance.Core.Contracts;
 using SmartHomeAppliance.Core.Models.DTOs.Auth;
@@ -14,15 +15,18 @@ namespace SmartHomeAppliance.Core.Services
         private readonly IJwtService jwtService;
         private readonly IConfiguration configuration;
         private readonly IEmailService emailService;
+        private readonly IImageStorageService imageStorageService;
         private ApiResponse apiResponse;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtService jwtService, IConfiguration configuration, IEmailService emailService)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtService jwtService, 
+            IConfiguration configuration, IEmailService emailService, IImageStorageService imageStorageService)
         {
             this.userManager = userManager;
             this.jwtService = jwtService;
             this.configuration = configuration;
             apiResponse = new ApiResponse();
             this.emailService = emailService;
+            this.imageStorageService = imageStorageService;
         }
         public async Task<ApiResponse> LoginAsync(LoginDTO loginModel)
         {
@@ -47,13 +51,7 @@ namespace SmartHomeAppliance.Core.Services
             var token = await jwtService.GenerateTokenAsync(user.Id); // Include user roles and other claims if needed
 
             apiResponse.StatusCode = 200;
-            apiResponse.Result = new
-            {
-                token,
-                userId = user.Id,
-                userEmail = user.Email,
-                userName = $"{user.FirstName} {user.LastName}"
-            };
+            apiResponse.Result = new { token, user };
             apiResponse.IsSuccess = true;
 
             return apiResponse;
@@ -69,6 +67,13 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
+            string profilePictureUrl = string.Empty;
+
+            if(registerModel.ProfilePicture != null)
+            {
+                profilePictureUrl = await imageStorageService.UploadImageAsync(registerModel.ProfilePicture);
+            }
+
             // 2. Create a new User
             var user = new ApplicationUser
             {
@@ -76,7 +81,7 @@ namespace SmartHomeAppliance.Core.Services
                 LastName = registerModel.LastName,
                 UserName = registerModel.Email,
                 Email = registerModel.Email,
-                ProfilePictureUrl = registerModel.ProfilePictureUrl
+                ProfilePictureUrl = profilePictureUrl
             };
 
             // 3. Create the user in the database first

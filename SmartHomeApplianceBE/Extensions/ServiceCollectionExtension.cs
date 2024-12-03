@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SmartHomeAppliance.Common.Settings;
 using SmartHomeAppliance.Core.Contracts;
 using SmartHomeAppliance.Core.Models.DTOs.Product;
 using SmartHomeAppliance.Core.Services;
@@ -11,8 +12,8 @@ using SmartHomeAppliance.Infrastructure.Data.Models;
 using Stripe;
 using System.Text;
 
-namespace Microsoft.Extensions.DependencyInjection 
-{ 
+namespace Microsoft.Extensions.DependencyInjection
+{
     public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
@@ -25,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IImageStorageService, ImageStorageService>();
 
             return services;
         }
@@ -39,6 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<StripeSettings>(config.GetSection("Stripe"));
             StripeConfiguration.ApiKey = config["Stripe:SecretKey"];
+
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             services.AddCors(options =>
             {

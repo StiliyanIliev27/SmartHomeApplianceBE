@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartHomeAppliance.Core.Models.DTOs.Auth
 {
@@ -18,6 +19,6 @@ namespace SmartHomeAppliance.Core.Models.DTOs.Auth
         [Required]
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = null!;
-        public string ProfilePictureUrl { get; set; } = string.Empty;
+        public IFormFile? ProfilePicture { get; set; }
     }
 }
