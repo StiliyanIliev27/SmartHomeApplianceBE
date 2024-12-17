@@ -7,5 +7,7 @@ namespace SmartHomeAppliance.Core.Contracts
     {
         Task<ApiResponse> RegisterAsync(RegisterDTO registerModel);
         Task<ApiResponse> LoginAsync(LoginDTO loginModel);
+        Task<ApiResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordModel);
+        Task<ApiResponse> ResetPasswordAsync(ResetPasswordDTO newPasswordModel);
     }
 }

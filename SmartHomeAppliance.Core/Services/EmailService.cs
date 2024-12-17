@@ -12,7 +12,7 @@ namespace SmartHomeAppliance.Core.Services
     public class EmailService : IEmailService
     {
         private readonly IConfiguration configuration;
-        private readonly string templatePath;
+        private readonly string templatePath = string.Empty;
         private readonly ILogger<EmailService> logger;
 
         public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
