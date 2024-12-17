@@ -38,6 +38,40 @@ namespace SmartHomeAppliance.API.Controllers
 
             if (response.StatusCode == 400)
                 return BadRequest(response);
+            
+            return Ok(response);
+        }
+
+        [HttpGet("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromQuery] ForgotPasswordDTO forgotPasswordModel)
+        {
+            var response = await authService.ForgotPasswordAsync(forgotPasswordModel);
+
+            if (response.StatusCode == 404)
+                return NotFound(response);
+            
+            if (response.StatusCode == 400)
+                return BadRequest(response);
+
+            if (response.StatusCode == 500)
+                return StatusCode(StatusCodes.Status500InternalServerError, response.ErrorMessages.First());
+
+            return Ok(response);
+        }
+
+        [HttpPatch("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordModel)
+        {
+            var response = await authService.ResetPasswordAsync(resetPasswordModel);
+
+            if (response.StatusCode == 404)
+                return NotFound(response);
+
+            if (response.StatusCode == 400)
+                return BadRequest(response);
+
+            if (response.StatusCode == 500)
+                return StatusCode(StatusCodes.Status500InternalServerError, response.ErrorMessages.First());
 
             return Ok(response);
         }

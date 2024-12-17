@@ -28,9 +28,9 @@ namespace SmartHomeAppliance.Core.Services
 
             var query = repository.AllReadOnly<Product>().AsQueryable();
 
-            if (!string.IsNullOrEmpty(category))
+            if (!string.IsNullOrEmpty(category) && Enum.TryParse<Category>(category, out var categoryEnum))
             {
-                query = query.Where(p => p.Category.ToString() == category);
+                query = query.Where(p => p.Category == categoryEnum);
             }
 
             if (minPrice.HasValue)
