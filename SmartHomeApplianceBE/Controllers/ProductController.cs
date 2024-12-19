@@ -25,6 +25,17 @@ namespace SmartHomeAppliance.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("latest-three-products")]
+        public async Task<IActionResult> LatestThreeProducts()
+        {
+            var response = await productService.GetLatestThreeProducts();
+
+            if (response.StatusCode == 404)
+                return NotFound(response);
+
+            return Ok(response);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody]CreateProductDto productDto)

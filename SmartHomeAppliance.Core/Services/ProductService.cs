@@ -154,6 +154,26 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
+        public async Task<ApiResponse> GetLatestThreeProducts()
+        {
+            var latestProducts = await repository.AllReadOnly<Product>()
+                .OrderBy(p => p.DateCreated).Take(3).ToListAsync();
+
+            if (!latestProducts.Any())
+            {
+                apiResponse.StatusCode = 404;
+                apiResponse.ErrorMessages.Add("No products were found by the giver criteria!");
+                apiResponse.IsSuccess = false;
+                return apiResponse;
+            }
+                
+            apiResponse.IsSuccess = true;
+            apiResponse.Message = $"Latest 3 products were successfully loaded!";
+            apiResponse.StatusCode = 200;
+            apiResponse.Result = latestProducts;
+            return apiResponse;
+        }
+
         public async Task<Product> GetProductByIdAsync(string productId)
         {
             return await repository.GetByIdAsync<Product>(productId) ?? throw new ArgumentException("Product was not found.");

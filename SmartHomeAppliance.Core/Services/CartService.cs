@@ -42,12 +42,14 @@ namespace SmartHomeAppliance.Core.Services
 
             if (existingCartProduct != null)
             {
-                existingCartProduct.Quantity += addProductToCartDto.Quantity;
+                existingCartProduct.Quantity = addProductToCartDto.Quantity;
                 apiResponse.StatusCode = 200;
                 apiResponse.Message = $"User with id: {userId} added {addProductToCartDto.Quantity} " +
                     $"to the existing product with id: {existingCartProduct.ProductId}";
                 apiResponse.Result = existingCartProduct;
                 apiResponse.IsSuccess = true;
+                await repository.UpdateAsync(existingCartProduct);
+                await repository.SaveChangesAsync();
             }
             else
             {
