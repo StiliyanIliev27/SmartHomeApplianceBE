@@ -42,7 +42,7 @@ namespace SmartHomeAppliance.Core.Services
 
             if (existingCartProduct != null)
             {
-                existingCartProduct.Quantity = addProductToCartDto.Quantity;
+                existingCartProduct.Quantity += addProductToCartDto.Quantity;
                 apiResponse.StatusCode = 200;
                 apiResponse.Message = $"User with id: {userId} added {addProductToCartDto.Quantity} " +
                     $"to the existing product with id: {existingCartProduct.ProductId}";
@@ -151,9 +151,9 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
-        public async Task<ApiResponse> RemoveCartProductAsync(string cartProductId)
+        public async Task<ApiResponse> RemoveCartProductAsync(RemoveProductDto removeProductDto)
         {
-            var cartProduct = await repository.All<CartsProduct>().FirstOrDefaultAsync(c => c.ProductId.ToString() == cartProductId);
+            var cartProduct = await repository.All<CartsProduct>().FirstOrDefaultAsync(c => c.ProductId.ToString() == removeProductDto.ProductId);
             if (cartProduct is null)
             {
                 apiResponse.ErrorMessages.Add("No product was not found for the particular cart.");
@@ -165,7 +165,7 @@ namespace SmartHomeAppliance.Core.Services
             repository.Delete(cartProduct);
             await repository.SaveChangesAsync();
 
-            apiResponse.Message = $"Successfully removed product with id: {cartProductId} from the cart with id: {cartProduct.CartId}";
+            apiResponse.Message = $"Successfully removed product with id: {removeProductDto.ProductId} from the cart with id: {cartProduct.CartId}";
             apiResponse.IsSuccess = true;
             apiResponse.StatusCode = 200;
             return apiResponse;

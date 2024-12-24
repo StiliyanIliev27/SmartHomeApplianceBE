@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAppliance.Core.Contracts;
 using SmartHomeAppliance.Core.Models.DTOs.Product;
+using System.Linq.Expressions;
 
 namespace SmartHomeAppliance.API.Controllers
 {
@@ -23,6 +24,21 @@ namespace SmartHomeAppliance.API.Controllers
             var response = await productService.AllProductsByFilterAsync(category, minPrice, maxPrice, searchTerm, page, pageSize);
 
             return Ok(response);
+        }
+
+        [HttpGet("product-by-id")]
+        public async Task<IActionResult> GetProductById([FromQuery]string productId)
+        {
+            try
+            {
+                var product = await productService.GetProductByIdAsync(productId);
+
+                return Ok(product);
+            }
+            catch (ArgumentException aex)
+            {
+                return NotFound(aex.Message);
+            }
         }
 
         [HttpGet("latest-three-products")]

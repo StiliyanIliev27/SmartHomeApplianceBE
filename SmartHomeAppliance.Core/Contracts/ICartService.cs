@@ -9,7 +9,7 @@ namespace SmartHomeAppliance.Core.Contracts
         Task<ApiResponse> GetCartByUserIdAsync(string userId);
         Task<Cart?> GetCartAsync(string userId);
         Task<ApiResponse> AddToCartAsync(string userId, ProductToCartDto addProductToCarDto);
-        Task<ApiResponse> RemoveCartProductAsync(string cartProductId);
+        Task<ApiResponse> RemoveCartProductAsync(RemoveProductDto removeProductDto);
         Task<ApiResponse> UpdateCartProductQuantityAsync(string userId, ProductToCartDto updateProductToCarDto);
         Task<ApiResponse> RemoveCartAsync(string userId);
     }

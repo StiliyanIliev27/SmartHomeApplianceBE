@@ -39,10 +39,10 @@ namespace SmartHomeAppliance.API.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("remove/{cartProductId}")]
-        public async Task<IActionResult> RemoveFromCart([FromBody]string cartProductId)
+        [HttpDelete("remove")]
+        public async Task<IActionResult> RemoveFromCart([FromBody]RemoveProductDto removeProductDto)
         {
-            var response = await cartService.RemoveCartProductAsync(cartProductId);
+            var response = await cartService.RemoveCartProductAsync(removeProductDto);
 
             if (response.StatusCode == 404)
                 return NotFound(response);
