@@ -10,6 +10,7 @@ using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 using MailKit.Net.Smtp;
 using static SmartHomeAppliance.Common.CustomErrors.GlobalErrors;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SmartHomeAppliance.Core.Services
 {

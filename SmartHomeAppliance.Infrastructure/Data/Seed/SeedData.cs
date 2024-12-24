@@ -31,6 +31,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://m.media-amazon.com/images/I/611pxr2ITgL.jpg",
                     StockQuantity = 50,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 4,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -42,6 +43,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://cdn.shopify.com/s/files/1/0024/9803/5810/products/597853-Product-0-I-637940195577281576.jpg?v=1658439198",
                     StockQuantity = 150,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 5,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -53,6 +55,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://engocontrols.com/wp-content/uploads/2022/07/E901WIFI-2000x2000-1_strona_-min.png",
                     StockQuantity = 30,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 4,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -64,6 +67,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://www.lifewire.com/thmb/Ib9NmsHdQ4q236zqBVxnsNYTIHA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/samsung-ha-ref-rf56k9540sr-family-hub-overview-5aa18f0e18ba010037c023a5.jpg",
                     StockQuantity = 10,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 3,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -75,6 +79,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://cdn.aarp.net/content/dam/aarpe/en/home/home-family/personal-technology/info-2019/smart-speaker-uses/_jcr_content/root/container_main/container_body_main/container_body1/container_body_cf/container_image/articlecontentfragment/cfimage.coreimg.50.932.jpeg/content/dam/aarp/home-and-family/personal-technology/2019/10/1140-smart-speaker-functions.jpg",
                     StockQuantity = 100,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 4,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -86,6 +91,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://static.independent.co.uk/2023/01/10/16/best%20energy%20monitors%20Indybest%20copy.jpg",
                     StockQuantity = 200,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 5,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -97,6 +103,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://crowncleaners.org.uk/wp-content/uploads/2024/08/Robot_Vacuum_Cleaner-feature-image-blog.jpg",
                     StockQuantity = 75,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 5,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -108,6 +115,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://s13emagst.akamaized.net/products/62903/62902367/images/res_b892254d28f050b61467aa3472854e47.jpg",
                     StockQuantity = 120,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 4,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -119,6 +127,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://smartechdaily.com/wp-content/uploads/2024/05/19690_Generated_Image-1024x585.webp",
                     StockQuantity = 40,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 3,
                     DateCreated = DateTime.UtcNow
                 },
                 new Product
@@ -130,6 +139,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     ImageUrl = "https://i.pcmag.com/imagery/reviews/05VIJDsjiZiHbe0MImRiYLr-1..v1569469978.jpg",
                     StockQuantity = 20,
                     CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
+                    Rating = 2,
                     DateCreated = DateTime.UtcNow
                 }
             };

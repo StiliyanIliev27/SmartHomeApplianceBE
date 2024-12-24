@@ -1,6 +1,8 @@
-﻿using SmartHomeAppliance.Infrastructure.Data.Enums;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartHomeAppliance.Infrastructure.Data.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static SmartHomeAppliance.Common.ValidationConstants.ValidationConstants.Product;
 
 namespace SmartHomeAppliance.Infrastructure.Data.Models
 {
@@ -26,6 +28,10 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
 
         [Required]
         public string ImageUrl { get; set; } = null!;
+
+        [Required]
+        [Length(ProductMinRatingValue, ProductMaxRatingValue, ErrorMessage = ProductRatingErrorMessage)]
+        public int Rating { get; set; }
 
         [Required]
         [ForeignKey(nameof(CreatorId))]
