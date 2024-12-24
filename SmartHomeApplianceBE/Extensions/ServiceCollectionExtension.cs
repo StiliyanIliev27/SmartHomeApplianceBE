@@ -2,14 +2,18 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SmartHomeAppliance.Common.Settings;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.DTOs.Product;
 using SmartHomeAppliance.Core.Services;
+using SmartHomeAppliance.Infrastructure.Common;
 using SmartHomeAppliance.Infrastructure.Data;
 using SmartHomeAppliance.Infrastructure.Data.Models;
+using Stripe;
 using System.Text;
 
-namespace Microsoft.Extensions.DependencyInjection 
-{ 
+namespace Microsoft.Extensions.DependencyInjection
+{
     public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
@@ -17,6 +21,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IProductService, SmartHomeAppliance.Core.Services.ProductService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IImageStorageService, ImageStorageService>();
 
             return services;
         }
@@ -27,20 +37,45 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDbContext<SmartHomeApplianceDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            services.AddScoped<IRepository, Repository>();
+
+            services.Configure<StripeSettings>(config.GetSection("Stripe"));
+            StripeConfiguration.ApiKey = config["Stripe:SecretKey"];
+
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
+
             return services;
         }
 
         public static IServiceCollection AddApplicationIdentity(this IServiceCollection services, IConfiguration config)
         {
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireUppercase = false;
-            })
+            services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("SmartHomeAppliance")
                 .AddEntityFrameworkStores<SmartHomeApplianceDbContext>()
                 .AddDefaultTokenProviders();
+
+            // Password requirements
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 5;
+                options.SignIn.RequireConfirmedEmail = true;
+            });
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

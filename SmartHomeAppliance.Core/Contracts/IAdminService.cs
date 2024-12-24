@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SmartHomeAppliance.Core.Models.Responses;
 
 namespace SmartHomeAppliance.Core.Contracts
 {
     public interface IAdminService
     {
+        Task<ApiResponse> AssignRoleAsync(string userId, string role);
     }
 }

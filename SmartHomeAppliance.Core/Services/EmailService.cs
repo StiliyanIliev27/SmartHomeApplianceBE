@@ -6,11 +6,13 @@ using MimeKit.Text;
 using MailKit.Net.Smtp;
 using SmartHomeAppliance.Core.Contracts;
 
+
 namespace SmartHomeAppliance.Core.Services
 {
     public class EmailService : IEmailService
     {
         private readonly IConfiguration configuration;
+        private readonly string templatePath = string.Empty;
         private readonly ILogger<EmailService> logger;
 
         public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
@@ -44,13 +46,21 @@ namespace SmartHomeAppliance.Core.Services
                 return false;
             }
 
+            var templatePath = Path.Combine("Templates", "EmailConfirmation.html");
+            var template = await File.ReadAllTextAsync(templatePath);
+            
+
+            var emailBody = template
+                .Replace("{LogoUrl}", "https://res.cloudinary.com/dqixe2hf5/image/upload/v1733177315/uuwkheeryeqc6doj9klt.jpg")
+                .Replace("{ConfirmationLink}", confirmationLink);
+
             var mailMessage = new MimeMessage();
             mailMessage.From.Add(MailboxAddress.Parse(fromEmail));
             mailMessage.To.Add(MailboxAddress.Parse(toEmail));
-            mailMessage.Subject = "Confirm Your Email";
+            mailMessage.Subject = "Confirm Your Email - HomeCraft";
             mailMessage.Body = new TextPart(TextFormat.Html)
             {
-                Text = $"Please confirm your email by clicking on the link: <a href='{confirmationLink}'>Confirm Email</a>"
+                Text = emailBody
             };
 
             try
