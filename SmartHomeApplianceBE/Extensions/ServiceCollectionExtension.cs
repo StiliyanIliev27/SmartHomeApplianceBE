@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IReviewService, SmartHomeAppliance.Core.Services.ReviewService>();
             services.AddScoped<IImageStorageService, ImageStorageService>();
 
             return services;
