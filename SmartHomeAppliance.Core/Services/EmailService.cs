@@ -5,6 +5,7 @@ using MimeKit;
 using MimeKit.Text;
 using MailKit.Net.Smtp;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.Responses;
 
 
 namespace SmartHomeAppliance.Core.Services
@@ -21,13 +22,16 @@ namespace SmartHomeAppliance.Core.Services
             this.logger = logger;
         }
 
-        public async Task<bool> SendEmailConfirmationAsync(string toEmail, string confirmationLink)
+        private EmailOptionsResponse ConfigureEmailOptions()
         {
+            var emailOptionsResponse = new EmailOptionsResponse();
+
             var fromEmail = configuration["SMTP:Username"];
             if (string.IsNullOrWhiteSpace(fromEmail))
             {
                 logger.LogError("SMTP username is not configured.");
-                return false;
+                emailOptionsResponse.IsSuccess = false;
+                return emailOptionsResponse;
             }
 
             var host = configuration["SMTP:Host"];
@@ -37,12 +41,30 @@ namespace SmartHomeAppliance.Core.Services
             if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(portString) || string.IsNullOrWhiteSpace(password))
             {
                 logger.LogError("SMTP configuration is incomplete. Please check SMTP:Host, SMTP:Port, and SMTP:Password.");
-                return false;
+                emailOptionsResponse.IsSuccess = false;
+                return emailOptionsResponse;
             }
 
             if (!int.TryParse(portString, out int port))
             {
                 logger.LogError("SMTP port is not a valid integer.");
+                emailOptionsResponse.IsSuccess = false;
+                return emailOptionsResponse;
+            }
+
+            emailOptionsResponse.Host = host;
+            emailOptionsResponse.Port = port;
+            emailOptionsResponse.Password = password;
+            emailOptionsResponse.FromEmail = fromEmail;
+            emailOptionsResponse.IsSuccess = true;
+            return emailOptionsResponse;
+        }
+
+        public async Task<bool> SendEmailConfirmationAsync(string toEmail, string confirmationLink)
+        {
+            var emailOptionsResponse = ConfigureEmailOptions();
+            if (!emailOptionsResponse.IsSuccess)
+            {
                 return false;
             }
 
@@ -55,7 +77,7 @@ namespace SmartHomeAppliance.Core.Services
                 .Replace("{ConfirmationLink}", confirmationLink);
 
             var mailMessage = new MimeMessage();
-            mailMessage.From.Add(MailboxAddress.Parse(fromEmail));
+            mailMessage.From.Add(MailboxAddress.Parse(emailOptionsResponse.FromEmail));
             mailMessage.To.Add(MailboxAddress.Parse(toEmail));
             mailMessage.Subject = "Confirm Your Email - HomeCraft";
             mailMessage.Body = new TextPart(TextFormat.Html)
@@ -73,8 +95,8 @@ namespace SmartHomeAppliance.Core.Services
                     smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
                 }
 
-                smtp.Connect(host, port, SecureSocketOptions.SslOnConnect);
-                smtp.Authenticate(fromEmail, password);
+                smtp.Connect(emailOptionsResponse.Host, emailOptionsResponse.Port, SecureSocketOptions.SslOnConnect);
+                smtp.Authenticate(emailOptionsResponse.FromEmail, emailOptionsResponse.Password);
                 await smtp.SendAsync(mailMessage);
                 smtp.Disconnect(true);
 
@@ -87,5 +109,53 @@ namespace SmartHomeAppliance.Core.Services
             }
         }
 
+        public async Task<bool> SendSuccessfulOrderAsync(string toEmail, string myOrdersLink)
+        {
+            var emailOptionsResponse = ConfigureEmailOptions();
+            if (!emailOptionsResponse.IsSuccess)
+            {
+                return false;
+            }
+
+            var templatePath = Path.Combine("Templates", "SuccessfulPurchase.html");
+            var template = await File.ReadAllTextAsync(templatePath);
+
+
+            var emailBody = template
+                .Replace("{LogoUrl}", "https://res.cloudinary.com/dqixe2hf5/image/upload/v1733177315/uuwkheeryeqc6doj9klt.jpg")
+                .Replace("{ViewMyOrders}", myOrdersLink);
+
+            var mailMessage = new MimeMessage();
+            mailMessage.From.Add(MailboxAddress.Parse(emailOptionsResponse.FromEmail));
+            mailMessage.To.Add(MailboxAddress.Parse(toEmail));
+            mailMessage.Subject = "Successful purchase - HomeCraft";
+            mailMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = emailBody
+            };
+
+            try
+            {
+                using var smtp = new SmtpClient();
+
+                // Conditionally bypass certificate validation for development
+                if (bool.TryParse(configuration["SMTP:BypassCertificateValidation"], out bool bypassCert) && bypassCert)
+                {
+                    smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                }
+
+                smtp.Connect(emailOptionsResponse.Host, emailOptionsResponse.Port, SecureSocketOptions.SslOnConnect);
+                smtp.Authenticate(emailOptionsResponse.FromEmail, emailOptionsResponse.Password);
+                await smtp.SendAsync(mailMessage);
+                smtp.Disconnect(true);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send email.");
+                return false;
+            }
+        }
     }
 }

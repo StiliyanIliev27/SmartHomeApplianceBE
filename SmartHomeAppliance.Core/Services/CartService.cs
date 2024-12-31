@@ -101,7 +101,7 @@ namespace SmartHomeAppliance.Core.Services
         {
             return await repository.AllReadOnly<Cart>().FirstOrDefaultAsync(c => c.UserId == userId);
         }
-        public async Task<ApiResponse> GetCartByUserIdAsync(string userId)
+        public async Task<ApiResponse> GetCartByUserIdAsync(string userId, decimal promCodePerc = 0)
         {
             var cart = await repository.AllReadOnly<Cart>()
                 .Include(c => c.User)
@@ -143,6 +143,11 @@ namespace SmartHomeAppliance.Core.Services
                 CartProducts = cartProductsDto,
                 TotalPrice = totalPrice
             };
+
+            if (promCodePerc > 0)
+            {
+                responseObject.TotalPrice -= 100 * (promCodePerc / 100);
+            }
 
             apiResponse.StatusCode = 200;
             apiResponse.Result = responseObject;
@@ -201,6 +206,14 @@ namespace SmartHomeAppliance.Core.Services
                 $"successfully updated with new quantity of {updateProductToCarDto.Quantity}.";
             apiResponse.IsSuccess = true;
             return apiResponse;
+        }
+
+        public async Task<IEnumerable<CartsProduct>> GetCartProductsAsync(string cartId)
+        {
+            return await repository.AllReadOnly<CartsProduct>()
+                .Where(cp => cp.CartId == cartId)
+                .Include(cp => cp.Product)
+                .ToListAsync();
         }
     }
 }

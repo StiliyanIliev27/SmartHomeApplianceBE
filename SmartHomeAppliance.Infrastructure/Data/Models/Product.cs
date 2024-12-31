@@ -2,6 +2,7 @@
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 using static SmartHomeAppliance.Common.ValidationConstants.ValidationConstants.Product;
 
 namespace SmartHomeAppliance.Infrastructure.Data.Models
@@ -44,5 +45,46 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         [Required]
         public int StockQuantity { get; set; }
         public List<OrdersProducts> OrdersProducts { get; set; } = new List<OrdersProducts>();
+
+        public string GetCategoryNormalized()
+        {
+            string categoryStr = string.Empty;
+
+            switch (this.Category)
+            {
+                case Category.EnergyManagement:
+                    categoryStr = "Energy Management";
+                    break;
+                case Category.CleaningAndHousehold:
+                    categoryStr = "Cleaning And Household";
+                    break;
+                case Category.HeatingAndCooling:
+                    categoryStr = "Heating And Cooling";
+                    break;
+                case Category.EntertainmentAndMedia:
+                    categoryStr = "Entertainment And Media";
+                    break;
+                case Category.HealthAndFitness:
+                    categoryStr = "Health And Fitness";
+                    break;
+                case Category.KitchenAppliances:
+                    categoryStr = "Kitchen Appliances";
+                    break;
+                case Category.LightingAndAmbiance:
+                    categoryStr = "Lighting And Ambiance";
+                    break;
+                case Category.OutdoorAndGarden:
+                    categoryStr = "Outdoor And Garden";
+                    break;
+                case Category.SecurityAndSurveillance:
+                    categoryStr = "Security And Surveillance";
+                    break;
+                case Category.SmartHubsAndControllers:
+                    categoryStr = "Smart Hubs And Controllers";
+                    break;
+            }
+
+            return categoryStr;
+        }
     }
 }

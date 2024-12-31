@@ -16,7 +16,7 @@ namespace SmartHomeAppliance.Core.Services
             this.repository = repository;
             apiResponse = new ApiResponse();
         }
-        public async Task<ApiResponse> CreateOrderFromCartAsync(string userId)
+        public async Task<ApiResponse> CreateOrderFromCartAsync(string userId, decimal promCodePerc = 0)
         {
             var cart = await repository.All<Cart>().FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -55,6 +55,11 @@ namespace SmartHomeAppliance.Core.Services
                 Status = Status.Pending,
             };
 
+            if (promCodePerc > 0)
+            {
+                newOrder.TotalPrice -= 100 * (promCodePerc / 100);
+            }
+
             foreach (var cartProduct in cartProducts)
             {
                 var orderProduct = new OrdersProducts()
@@ -88,7 +93,7 @@ namespace SmartHomeAppliance.Core.Services
 
         public async Task<Order?> GetOrderByIdAsync(string orderId)
         {
-            return await repository.GetByIdAsync<Order>(orderId);
+            return await repository.AllReadOnly<Order>().Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
         }
 
         public async Task UpdateOrderStatusAsync(string orderId, Status status)
