@@ -6,7 +6,7 @@ namespace SmartHomeAppliance.Core.Contracts
 {
     public interface IOrderService
     {
-        Task<ApiResponse> CreateOrderFromCartAsync(string userId);
+        Task<ApiResponse> CreateOrderFromCartAsync(string userId, decimal promCodePerc);
         Task<Order?> GetOrderByIdAsync(string orderId);
         Task UpdateOrderStatusAsync(string orderId, Status status);
     }

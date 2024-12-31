@@ -28,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IReviewService, SmartHomeAppliance.Core.Services.ReviewService>();
             services.AddScoped<IImageStorageService, ImageStorageService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             return services;
         }

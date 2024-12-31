@@ -18,9 +18,9 @@ namespace SmartHomeAppliance.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCart()
+        public async Task<IActionResult> GetCart([FromQuery]decimal promoCodePerc)
         {
-            var response = await cartService.GetCartByUserIdAsync(UserId);
+            var response = await cartService.GetCartByUserIdAsync(UserId, promoCodePerc);
 
             if (response.StatusCode == 404)
                 return NotFound(response);
