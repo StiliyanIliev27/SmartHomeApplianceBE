@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.DTOs.Order;
 using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Common;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
@@ -11,10 +13,12 @@ namespace SmartHomeAppliance.Core.Services
     {
         private readonly IRepository repository;
         private ApiResponse apiResponse;
-        public OrderService(IRepository repository)
+        private readonly UserManager<ApplicationUser> userManager;
+        public OrderService(IRepository repository, UserManager<ApplicationUser> userManager)
         {
             this.repository = repository;
             apiResponse = new ApiResponse();
+            this.userManager = userManager;
         }
         public async Task<ApiResponse> CreateOrderFromCartAsync(string userId, decimal promCodePerc = 0)
         {
@@ -52,7 +56,7 @@ namespace SmartHomeAppliance.Core.Services
                 UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice,
-                Status = Status.Pending,
+                PaymentStatus = PaymentStatus.Pending,
             };
 
             if (promCodePerc > 0)
@@ -91,17 +95,50 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
+        private async Task<bool> IsAdminAsync(string userId)
+        {
+            var user = await repository.GetByIdAsync<ApplicationUser>(userId);
+            if (user is null)
+                return false;
+
+            return await userManager.IsInRoleAsync(user, "Admin");
+        }
+
+        public async Task<IEnumerable<GetMyOrdersDto>> GetMyOrdersAsync(string userId)
+        {
+
+            return await repository.AllReadOnly<Order>()
+                .Where(o => o.UserId == userId)
+                .Include(o => o.User)
+                .Select(o => new GetMyOrdersDto()
+                {
+                    OrderId = o.OrderId,
+                    Customer = o.User!.FirstName + " " + o.User.LastName,
+                    CustomerProfilePicture = o.User.ProfilePictureUrl,
+                    PaymentStatus = o.PaymentStatus.ToString(),
+                    OrderStatus = o.OrderStatus.ToString(),
+                    OrderDate = o.OrderDate.ToString("dd-MM-yyyy"),
+                    Products = o.OrdersProducts
+                        .Where(op => op.OrderId == o.OrderId).Select(op => new GetProductsNameDto()
+                    {
+                        ProductName = op.Product!.Name
+                    }),
+                    TotalPrice = o.TotalPrice
+                })
+                .ToListAsync();
+        }
+
         public async Task<Order?> GetOrderByIdAsync(string orderId)
         {
             return await repository.AllReadOnly<Order>().Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
         }
 
-        public async Task UpdateOrderStatusAsync(string orderId, Status status)
+        public async Task UpdateOrderStatusAsync(string orderId, PaymentStatus status)
         {
             var order = await repository.All<Order>().Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) throw new KeyNotFoundException("Order not found");
 
-            order.Status = status;
+            order.PaymentStatus = status;
             await repository.UpdateAsync(order);
             await repository.SaveChangesAsync();
         }

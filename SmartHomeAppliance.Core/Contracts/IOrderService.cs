@@ -1,4 +1,5 @@
-﻿using SmartHomeAppliance.Core.Models.Responses;
+﻿using SmartHomeAppliance.Core.Models.DTOs.Order;
+using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 
@@ -8,6 +9,7 @@ namespace SmartHomeAppliance.Core.Contracts
     {
         Task<ApiResponse> CreateOrderFromCartAsync(string userId, decimal promCodePerc);
         Task<Order?> GetOrderByIdAsync(string orderId);
-        Task UpdateOrderStatusAsync(string orderId, Status status);
+        Task<IEnumerable<GetMyOrdersDto>> GetMyOrdersAsync(string userId);
+        Task UpdateOrderStatusAsync(string orderId, PaymentStatus status);
     }
 }

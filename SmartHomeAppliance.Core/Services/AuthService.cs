@@ -194,9 +194,10 @@ namespace SmartHomeAppliance.Core.Services
             }
 
             var token = await jwtService.GenerateTokenAsync(user.Id); // Include user roles and other claims if needed
+            var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
 
             apiResponse.StatusCode = 200;
-            apiResponse.Result = new { token, user };
+            apiResponse.Result = new { token, user, isAdmin };
             apiResponse.IsSuccess = true;
 
             return apiResponse;

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SmartHomeAppliance.API.Controllers;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.DTOs.Order;
+using SmartHomeAppliance.Core.Models.DTOs.Payment;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 using Stripe;
@@ -35,8 +38,16 @@ public class OrderController : BaseController
         webhookSecret = configuration["Stripe:WebhookSecret"]!;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetMyOrders()
+    {
+        var response = await orderService.GetMyOrdersAsync(UserId);
+
+        return Ok(response);
+    }
+
     [HttpPost("create-checkout-session")]
-    public async Task<IActionResult> CreateCheckoutSession([FromQuery] decimal promoCodePerc)
+    public async Task<IActionResult> CreateCheckoutSession([FromQuery] DiscountCouponDto discountCoupon)
     {
         try
         {
@@ -46,16 +57,16 @@ public class OrderController : BaseController
                 return BadRequest(new { error = new { message = "Your cart is empty." } });
             }
 
-            // Вземаме продуктите от количката
             var cartProducts = await cartService.GetCartProductsAsync(cart.Id);
             if (!cartProducts.Any())
             {
                 return BadRequest(new { error = new { message = "Your cart is empty." } });
             }
 
-            // Създаваме LineItems за всеки продукт в количката с проверки
             var lineItems = new List<SessionLineItemOptions>();
+            decimal subtotal = 0;
 
+            // Добавяме продуктите
             foreach (var item in cartProducts)
             {
                 if (item?.Product == null || item.Price <= 0 || item.Quantity <= 0)
@@ -63,22 +74,24 @@ public class OrderController : BaseController
                     continue;
                 }
 
+                subtotal += item.Price * item.Quantity;
+
                 var lineItem = new SessionLineItemOptions
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.Price * 100),
+                        UnitAmount = (long)Math.Round(item.Price * 100),
                         Currency = "usd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Product.Name ?? "Unknown Product",
                             Description = $"Category: {item.Product.GetCategoryNormalized() ?? "Uncategorized"}",
                             Images = new List<string>
-                {
-                    !string.IsNullOrEmpty(item.Product.ImageUrl)
-                        ? item.Product.ImageUrl
-                        : "https://your-default-image-url.com/placeholder.jpg"
-                }
+                        {
+                            !string.IsNullOrEmpty(item.Product.ImageUrl)
+                                ? item.Product.ImageUrl
+                                : "https://your-default-image-url.com/placeholder.jpg"
+                        }
                         }
                     },
                     Quantity = item.Quantity
@@ -92,13 +105,13 @@ public class OrderController : BaseController
                 return BadRequest(new { error = new { message = "No valid items in cart." } });
             }
 
-            var orderResponse = await orderService.CreateOrderFromCartAsync(UserId, promoCodePerc);
+            var orderResponse = await orderService.CreateOrderFromCartAsync(UserId, discountCoupon.DiscountPercentage);
             if (!orderResponse.IsSuccess)
             {
                 return BadRequest(new { error = new { message = string.Join(", ", orderResponse.ErrorMessages) } });
             }
 
-            var order = orderResponse.Result as Order;       
+            var order = orderResponse.Result as Order;
 
             var options = new SessionCreateOptions
             {
@@ -106,21 +119,22 @@ public class OrderController : BaseController
                 LineItems = lineItems,
                 Mode = "payment",
                 SuccessUrl = $"http://localhost:5173/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"http://localhost:5173/payment/cancel",
+                CancelUrl = $"http://localhost:5173/payment/cancel?order_id={order!.OrderId}",
                 CustomerEmail = User.Identity?.Name,
                 Metadata = new Dictionary<string, string>
             {
-                { "order_id", order.OrderId.ToString() }
+                { "order_id", order.OrderId.ToString() },
+                { "original_amount", subtotal.ToString("F2") },
+                { "discount_percentage", discountCoupon.DiscountPercentage.ToString("F2") }
             },
-                // Добавяме shipping адрес
                 ShippingAddressCollection = new SessionShippingAddressCollectionOptions
                 {
                     AllowedCountries = new List<string> { "US", "CA", "GB", "BG" }
                 },
-                // Добавяме данни за поръчката
                 PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
-                    Description = $"Order #{order.OrderId} - Smart Home Products",
+                    Description = $"Order #{order.OrderId}" +
+                                (discountCoupon.DiscountPercentage > 0 ? $" (Including {discountCoupon.DiscountPercentage}% discount)" : ""),
                     Metadata = new Dictionary<string, string>
                 {
                     { "order_id", order.OrderId.ToString() }
@@ -128,10 +142,39 @@ public class OrderController : BaseController
                 }
             };
 
+            // Добавяме купон ако има промо код
+            if (discountCoupon.DiscountPercentage > 0)
+            {
+                try
+                {
+                    var couponOptions = new CouponCreateOptions
+                    {
+                        PercentOff = (long)Math.Round(discountCoupon.DiscountPercentage),
+                        Duration = "once",
+                        Name = $"DISCOUNT_{discountCoupon.DiscountPercentage}OFF_{discountCoupon.DiscountCode}"
+                    };
+
+                    var couponService = new CouponService();
+                    var coupon = await couponService.CreateAsync(couponOptions);
+
+                    options.Discounts = new List<SessionDiscountOptions>
+                {
+                    new SessionDiscountOptions
+                    {
+                        Coupon = coupon.Id
+                    }
+                };
+                }
+                catch (StripeException ex)
+                {
+                    Console.WriteLine($"Error creating coupon: {ex.Message}");
+                    // Продължаваме без отстъпка ако има грешка при създаването на купона
+                }
+            }
+
             var service = new SessionService();
             var session = await service.CreateAsync(options);
 
-            // Clear the cart after creating the session
             await cartService.RemoveCartAsync(UserId);
 
             return Ok(new { url = session.Url });
@@ -164,10 +207,10 @@ public class OrderController : BaseController
                     var session = stripeEvent.Data.Object as Session;
                     if (session != null && session.Metadata != null && session.Metadata.TryGetValue("order_id", out string orderId))
                     {
-                        await orderService.UpdateOrderStatusAsync(orderId, Status.Completed);
+                        await orderService.UpdateOrderStatusAsync(orderId, PaymentStatus.Completed);
                         var order = await orderService.GetOrderByIdAsync(orderId);
                         var userEmail = await profileService.GetUserEmailAsync(order!.UserId);
-                        await emailService.SendSuccessfulOrderAsync(userEmail, $"http://localhost:5173/myOrders");
+                        await emailService.SendSuccessfulOrderAsync(userEmail, $"http://localhost:5173/orders");
                     }
                     break;
 
@@ -175,7 +218,42 @@ public class OrderController : BaseController
                     var expiredSession = stripeEvent.Data.Object as Session;
                     if (expiredSession != null && expiredSession.Metadata != null && expiredSession.Metadata.TryGetValue("order_id", out string expiredOrderId))
                     {
-                        await orderService.UpdateOrderStatusAsync(expiredOrderId, Status.Cancelled);
+                        await orderService.UpdateOrderStatusAsync(expiredOrderId, PaymentStatus.Cancelled);
+                        // Изпращаме имейл за отказана поръчка
+                        var expiredOrder = await orderService.GetOrderByIdAsync(expiredOrderId);
+                        if (expiredOrder != null)
+                        {
+                            var userEmail = await profileService.GetUserEmailAsync(expiredOrder.UserId);
+                            await emailService.SendOrderCancelledAsync(userEmail, expiredOrderId);
+                        }
+                    }
+                    break;
+
+                case "checkout.session.async_payment_failed":
+                    var failedSession = stripeEvent.Data.Object as Session;
+                    if (failedSession != null && failedSession.Metadata != null && failedSession.Metadata.TryGetValue("order_id", out string failedOrderId))
+                    {
+                        await orderService.UpdateOrderStatusAsync(failedOrderId, PaymentStatus.Failed);
+                        var failedOrder = await orderService.GetOrderByIdAsync(failedOrderId);
+                        if (failedOrder != null)
+                        {
+                            var userEmail = await profileService.GetUserEmailAsync(failedOrder.UserId);
+                            await emailService.SendPaymentFailedAsync(userEmail, failedOrderId);
+                        }
+                    }
+                    break;
+
+                case "checkout.session.async_payment_succeeded":
+                    var succeededSession = stripeEvent.Data.Object as Session;
+                    if (succeededSession != null && succeededSession.Metadata != null && succeededSession.Metadata.TryGetValue("order_id", out string succeededOrderId))
+                    {
+                        await orderService.UpdateOrderStatusAsync(succeededOrderId, PaymentStatus.Completed);
+                        var succeededOrder = await orderService.GetOrderByIdAsync(succeededOrderId);
+                        if (succeededOrder != null)
+                        {
+                            var userEmail = await profileService.GetUserEmailAsync(succeededOrder.UserId);
+                            await emailService.SendSuccessfulOrderAsync(userEmail, $"http://localhost:5173/orders");
+                        }
                     }
                     break;
 
@@ -188,11 +266,42 @@ public class OrderController : BaseController
         }
         catch (StripeException e)
         {
+            Console.WriteLine($"Stripe Error: {e.Message}");
             return BadRequest($"Webhook Error: {e.Message}");
         }
         catch (Exception e)
         {
+            Console.WriteLine($"General Error: {e.Message}");
             return StatusCode(500, $"Internal Error: {e.Message}");
+        }
+    }
+
+    [HttpPost("cancel")]
+    public async Task<IActionResult> HandleCancelledPayment([FromQuery] string orderId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(orderId))
+            {
+                return BadRequest(new { error = "Order ID is required" });
+            }
+
+            // Обновете статуса на поръчката
+            await orderService.UpdateOrderStatusAsync(orderId, PaymentStatus.Cancelled);
+
+            // Вземете информация за поръчката и изпратете имейл
+            var order = await orderService.GetOrderByIdAsync(orderId);
+            if (order != null)
+            {
+                var userEmail = await profileService.GetUserEmailAsync(order.UserId);
+                await emailService.SendOrderCancelledAsync(userEmail, orderId);
+            }
+
+            return Ok(new { message = "Order cancelled successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
         }
     }
 }
