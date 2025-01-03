@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SmartHomeAppliance.API.Controllers;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Extensions;
 using SmartHomeAppliance.Core.Models.DTOs.Order;
 using SmartHomeAppliance.Core.Models.DTOs.Payment;
+using SmartHomeAppliance.Infrastructure.Common;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 using Stripe;
 using Stripe.Checkout;
+using static SmartHomeAppliance.Common.GlobalConstants.ActivityMessages;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -20,9 +23,11 @@ public class OrderController : BaseController
     private readonly ICartService cartService;
     private readonly IProfileService profileService;
     private readonly IEmailService emailService;
+    private readonly IRepository repository;
     private readonly string webhookSecret;
 
     public OrderController(
+        IRepository repository,
         IOrderService orderService,
         IPaymentService paymentService,
         ICartService cartService,
@@ -35,6 +40,7 @@ public class OrderController : BaseController
         this.cartService = cartService;
         this.emailService = emailService;
         this.profileService = profileService;
+        this.repository = repository;
         webhookSecret = configuration["Stripe:WebhookSecret"]!;
     }
 
@@ -208,9 +214,25 @@ public class OrderController : BaseController
                     if (session != null && session.Metadata != null && session.Metadata.TryGetValue("order_id", out string orderId))
                     {
                         await orderService.UpdateOrderStatusAsync(orderId, PaymentStatus.Completed);
+                        
                         var order = await orderService.GetOrderByIdAsync(orderId);
                         var userEmail = await profileService.GetUserEmailAsync(order!.UserId);
                         await emailService.SendSuccessfulOrderAsync(userEmail, $"http://localhost:5173/orders");
+
+                        var activity = ActivityExtensions.CreateActivity(
+                           type: ActivityType.OrderUpdated,
+                           messageTemplate: OrderUpdated,
+                           userId: order.UserId,
+                           entityId: orderId,
+                           entityType: EntityType.Order,
+                           parameters: new[] {
+                                ("orderId", orderId),
+                                ("status", order.PaymentStatus.ToString())
+                           }
+                        );
+
+                        await repository.AddAsync(activity);
+                        await repository.SaveChangesAsync();
                     }
                     break;
 
@@ -219,11 +241,29 @@ public class OrderController : BaseController
                     if (expiredSession != null && expiredSession.Metadata != null && expiredSession.Metadata.TryGetValue("order_id", out string expiredOrderId))
                     {
                         await orderService.UpdateOrderStatusAsync(expiredOrderId, PaymentStatus.Cancelled);
+                        
+                        var order = await orderService.GetOrderByIdAsync(expiredOrderId);
+                        var userEmail = await profileService.GetUserEmailAsync(order!.UserId);
+                        
+                        var activity = ActivityExtensions.CreateActivity(
+                           type: ActivityType.OrderUpdated,
+                           messageTemplate: OrderUpdated,
+                           userId: order.UserId,
+                           entityId: expiredOrderId,
+                           entityType: EntityType.Order,
+                           parameters: new[] {
+                                ("orderId", expiredOrderId),
+                                ("status", order.PaymentStatus.ToString())
+                           }
+                        );
+
+                        await repository.AddAsync(activity);
+                        await repository.SaveChangesAsync();
+                        
                         // Изпращаме имейл за отказана поръчка
                         var expiredOrder = await orderService.GetOrderByIdAsync(expiredOrderId);
                         if (expiredOrder != null)
                         {
-                            var userEmail = await profileService.GetUserEmailAsync(expiredOrder.UserId);
                             await emailService.SendOrderCancelledAsync(userEmail, expiredOrderId);
                         }
                     }
@@ -234,10 +274,27 @@ public class OrderController : BaseController
                     if (failedSession != null && failedSession.Metadata != null && failedSession.Metadata.TryGetValue("order_id", out string failedOrderId))
                     {
                         await orderService.UpdateOrderStatusAsync(failedOrderId, PaymentStatus.Failed);
+                        
                         var failedOrder = await orderService.GetOrderByIdAsync(failedOrderId);
+                        var userEmail = await profileService.GetUserEmailAsync(failedOrder!.UserId);
+                       
+                        var activity = ActivityExtensions.CreateActivity(
+                           type: ActivityType.OrderUpdated,
+                           messageTemplate: OrderUpdated,
+                           userId: failedOrder.UserId,
+                           entityId: failedOrderId,
+                           entityType: EntityType.Order,
+                           parameters: new[] {
+                                ("orderId", failedOrderId),
+                                ("status", failedOrder.PaymentStatus.ToString())
+                           }
+                        );
+
+                        await repository.AddAsync(activity);
+                        await repository.SaveChangesAsync();
+                        
                         if (failedOrder != null)
                         {
-                            var userEmail = await profileService.GetUserEmailAsync(failedOrder.UserId);
                             await emailService.SendPaymentFailedAsync(userEmail, failedOrderId);
                         }
                     }
@@ -248,10 +305,28 @@ public class OrderController : BaseController
                     if (succeededSession != null && succeededSession.Metadata != null && succeededSession.Metadata.TryGetValue("order_id", out string succeededOrderId))
                     {
                         await orderService.UpdateOrderStatusAsync(succeededOrderId, PaymentStatus.Completed);
+                        
+                        var order = await orderService.GetOrderByIdAsync(succeededOrderId);
+                        var userEmail = await profileService.GetUserEmailAsync(order!.UserId);
+                        
+                        var activity = ActivityExtensions.CreateActivity(
+                           type: ActivityType.OrderUpdated,
+                           messageTemplate: OrderUpdated,
+                           userId: order.UserId,
+                           entityId: succeededOrderId,
+                           entityType: EntityType.Order,
+                           parameters: new[] {
+                                ("orderId", succeededOrderId),
+                                ("status", order.PaymentStatus.ToString())
+                           }
+                        );
+
+                        await repository.AddAsync(activity);
+                        await repository.SaveChangesAsync();
+                        
                         var succeededOrder = await orderService.GetOrderByIdAsync(succeededOrderId);
                         if (succeededOrder != null)
                         {
-                            var userEmail = await profileService.GetUserEmailAsync(succeededOrder.UserId);
                             await emailService.SendSuccessfulOrderAsync(userEmail, $"http://localhost:5173/orders");
                         }
                     }
@@ -289,11 +364,26 @@ public class OrderController : BaseController
             // Обновете статуса на поръчката
             await orderService.UpdateOrderStatusAsync(orderId, PaymentStatus.Cancelled);
 
-            // Вземете информация за поръчката и изпратете имейл
             var order = await orderService.GetOrderByIdAsync(orderId);
+            var userEmail = await profileService.GetUserEmailAsync(order.UserId);
+
+            var activity = ActivityExtensions.CreateActivity(
+                type: ActivityType.OrderCancelled,
+                messageTemplate: OrderCancelled,
+                userId: order.UserId,
+                entityId: orderId,
+                entityType: EntityType.Order,
+                parameters: new[] {
+                    ("orderId", orderId),
+                    ("reason", "User has left the payment page!")
+                }
+            );
+
+            await repository.AddAsync(activity);
+            await repository.SaveChangesAsync();
+    
             if (order != null)
             {
-                var userEmail = await profileService.GetUserEmailAsync(order.UserId);
                 await emailService.SendOrderCancelledAsync(userEmail, orderId);
             }
 

@@ -27,5 +27,21 @@ namespace SmartHomeAppliance.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            var response = await adminService.GetDashboardAsync();
+
+            return Ok(response);
+        }
+
+        [HttpGet("recent-activities")]
+        public async Task<IActionResult> RecentActivities()
+        {
+            var activities = await adminService.GetRecentActivitiesAsync();
+
+            return Ok(activities);
+        }
     }
 }

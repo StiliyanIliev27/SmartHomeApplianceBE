@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Extensions;
 using SmartHomeAppliance.Core.Models.DTOs.Order;
 using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Common;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Data.Models;
+using static SmartHomeAppliance.Common.GlobalConstants.ActivityMessages;
 
 namespace SmartHomeAppliance.Core.Services
 {
@@ -86,7 +88,22 @@ namespace SmartHomeAppliance.Core.Services
             {
                 repository.Delete(cartProduct);
             }
-            // Save changes
+
+            var user = await repository.GetByIdAsync<ApplicationUser>(userId);
+
+            var activity = ActivityExtensions.CreateActivity(
+                type: ActivityType.OrderCreated,
+                messageTemplate: OrderCreated,
+                userId: newOrder.UserId,
+                entityId: newOrder.OrderId,
+                entityType: EntityType.Order,
+                parameters: new[] {
+                    ("orderId", newOrder.OrderId),
+                    ("email", user!.Email!)
+                }
+            );
+
+            await repository.AddAsync(activity);
             await repository.SaveChangesAsync();
 
             apiResponse.Result = newOrder;
@@ -138,7 +155,28 @@ namespace SmartHomeAppliance.Core.Services
             var order = await repository.All<Order>().Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) throw new KeyNotFoundException("Order not found");
 
+            if(status == PaymentStatus.Cancelled || status == PaymentStatus.Failed)
+            {
+                order.OrderStatus = OrderStatus.Cancelled;
+            }
+
             order.PaymentStatus = status;
+
+            var user = await repository.GetByIdAsync<ApplicationUser>(order.UserId);
+
+            var activity = ActivityExtensions.CreateActivity(
+                type: ActivityType.OrderUpdated,
+                messageTemplate: OrderUpdated,
+                userId: order.UserId,
+                entityId: order.OrderId,
+                entityType: EntityType.Order,
+                parameters: new[] {
+                    ("orderId", order.OrderId),
+                    ("email", user!.Email!)
+                }
+            );
+
+            await repository.AddAsync(activity);
             await repository.UpdateAsync(order);
             await repository.SaveChangesAsync();
         }
