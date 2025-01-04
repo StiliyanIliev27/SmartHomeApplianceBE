@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAppliance.Core.Contracts;
+using SmartHomeAppliance.Core.Models.DTOs.Admin.Users;
 
 namespace SmartHomeAppliance.API.Controllers
 {
@@ -16,14 +17,16 @@ namespace SmartHomeAppliance.API.Controllers
         }
 
         [HttpPost("assign-role")]
-        public async Task<IActionResult> AssignRole(string userId, string role)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequestDto assignRoleDto)
         {
-            var response = await adminService.AssignRoleAsync(userId, role);
+            var response = await adminService.AssignRoleAsync(assignRoleDto);
 
             if (response.StatusCode == 400)
                 return BadRequest(response);
             else if (response.StatusCode == 404)
                 return NotFound(response);
+            else if (response.StatusCode == 403)
+                return StatusCode(403, response);
 
             return Ok(response);
         }
@@ -42,6 +45,38 @@ namespace SmartHomeAppliance.API.Controllers
             var activities = await adminService.GetRecentActivitiesAsync();
 
             return Ok(activities);
+        }
+
+        [HttpGet("top-products")]
+        public async Task<IActionResult> TopProducts()
+        {
+            var products = await adminService.GetTopProductsAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("overall-rating")]
+        public async Task<IActionResult> OverallRating()
+        {
+            var overallRating = await adminService.GetOverallRatingAsync();
+
+            return Ok(overallRating);
+        }
+        
+        [HttpGet("inventory-status")]
+        public async Task<IActionResult> InventoryStatus()
+        {
+            var inventoryStatus = await adminService.GetInventoryAsync();
+
+            return Ok(inventoryStatus);
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await adminService.GetUsersDataAsync();
+
+            return Ok(users);
         }
     }
 }

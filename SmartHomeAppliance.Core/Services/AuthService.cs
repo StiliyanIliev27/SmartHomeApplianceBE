@@ -237,6 +237,9 @@ namespace SmartHomeAppliance.Core.Services
                 parameters: ("email", user.Email!)
             );
 
+            user.LastLoginDate = DateTime.Now;
+            await userManager.UpdateAsync(user);
+
             await repository.AddAsync(activity);
             await repository.SaveChangesAsync();
 
@@ -321,16 +324,35 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
-        private UserResponseDto MapUserToUserResponseDto(ApplicationUser user)
+        private async Task<UserResponseDto> MapUserToUserResponseDtoAsync(ApplicationUser user)
         {
+            var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
             return new UserResponseDto()
             {
                 Id = user.Id,
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                ProfilePictureUrl = user.ProfilePictureUrl
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                IsAdmin = isAdmin
             };
+        }
+
+        public async Task<ApiResponse> GetCurrentUserAsync(string userId)
+        {
+            var user = await repository.GetByIdAsync<ApplicationUser>(userId);
+            if(user is null)
+            {
+                apiResponse.ErrorMessages.Add(UserNotFound);
+                apiResponse.IsSuccess = false;
+                apiResponse.StatusCode = 404;
+                return apiResponse;
+            }
+
+            apiResponse.Result = await MapUserToUserResponseDtoAsync(user);
+            apiResponse.IsSuccess = true;
+            apiResponse.StatusCode = 200;
+            return apiResponse;
         }
     }
 }

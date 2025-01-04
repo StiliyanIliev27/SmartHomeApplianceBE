@@ -77,6 +77,19 @@ namespace SmartHomeAppliance.Core.Services
                     Quantity = cartProduct.Quantity,
                     OrderId = newOrder.OrderId.ToString()
                 };
+
+                var product = await repository.GetByIdAsync<Product>(orderProduct.ProductId);
+                if(product!.StockQuantity < 1)
+                {
+                    apiResponse.ErrorMessages.Add("Product is out of stock!");
+                    apiResponse.StatusCode = 400;
+                    apiResponse.IsSuccess = false;
+                    return apiResponse;
+                }
+
+                product!.StockQuantity -= orderProduct.Quantity;
+
+                await repository.UpdateAsync(product);
                 await repository.AddAsync(orderProduct);
             }
 

@@ -83,5 +83,17 @@ namespace SmartHomeAppliance.API.Controllers
         {
             return Ok("User is logged in.");
         }
+
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var response = await authService.GetCurrentUserAsync(UserId);
+
+            if (response.StatusCode == 400)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
     }
 }

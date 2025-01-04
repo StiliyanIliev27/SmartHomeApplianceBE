@@ -1,4 +1,4 @@
-﻿namespace SmartHomeAppliance.Core.Models.DTOs.Admin
+﻿namespace SmartHomeAppliance.Core.Models.DTOs.Admin.Dashboard
 {
     public class GetActivitiesDto
     {
