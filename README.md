@@ -135,9 +135,7 @@ dotnet run --project SmartHomeAppliance.API
 - 🎭 Dependency Injection
 
 ## 📫 Contact & Support
-- 📧 Email: support@smarthub.com
-- 💬 Discord: [Join our community](discord-link)
-- 🌐 Website: [SmartHub](website-link)
+- 📧 Email: stiliyaniliev2705@gmail.com
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details. 📜
