@@ -13,12 +13,12 @@ namespace SmartHomeAppliance.Core.Extensions
             EntityType entityType,
             params (string Key, string Value)[] parameters)
         {
-            return new Activity
+            return new Activity()
             {
                 Type = type,
                 Message = messageTemplate.FormatActivity(parameters),
-                UserId = userId,
-                EntityId = entityId,
+                UserId = userId == "Anonymous user" ? null : userId,
+                EntityId = entityId == "Anonymous user" ? null : entityId,
                 EntityType = entityType,
                 CreatedAt = DateTime.UtcNow
             };

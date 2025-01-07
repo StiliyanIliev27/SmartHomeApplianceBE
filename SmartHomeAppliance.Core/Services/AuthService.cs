@@ -201,20 +201,26 @@ namespace SmartHomeAppliance.Core.Services
                 apiResponse.ErrorMessages.Add("Email or password is incorrect!");
                 apiResponse.IsSuccess = false;
                 apiResponse.StatusCode = 400;
-
-                activity = ActivityExtensions.CreateActivity(
+                
+                try
+                {
+                    activity = ActivityExtensions.CreateActivity(
                     type: ActivityType.UserLogin,
                     messageTemplate: UserLoginFailed,
                     userId: user?.Id ?? "Anonymous user",
                     entityId: user?.Id ?? "Anonymous user",
                     entityType: EntityType.User,
-                    parameters: ("email", user?.Email!)
-                );
+                    parameters: ("email", loginModel.Email));
 
-                await repository.AddAsync(activity);
-                await repository.SaveChangesAsync();
+                    await repository.AddAsync(activity);
+                    await repository.SaveChangesAsync();
 
-                return apiResponse;
+                    return apiResponse;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             if (!user.EmailConfirmed)
