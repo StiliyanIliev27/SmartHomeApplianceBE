@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartHomeAppliance.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SmartHomeAppliance.Infrastructure.Data;
 namespace SmartHomeAppliance.Infrastructure.Migrations
 {
     [DbContext(typeof(SmartHomeApplianceDbContext))]
-    partial class SmartHomeApplianceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250106230844_AddedStripePaymentIntentIdToOrderTable")]
+    partial class AddedStripePaymentIntentIdToOrderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,6 +204,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -294,85 +298,85 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                         {
                             Id = "27d78708-8671-4b05-bd5e-17aa91392224",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "73e8042f-592a-44f4-90b0-c8a9bcfab89a",
+                            ConcurrencyStamp = "45424ff0-43c2-46c9-bbd6-1a1c0fac43f7",
                             Email = "admin@smarthomeapp.bg",
                             EmailConfirmed = true,
                             FirstName = "Admin",
                             LastName = "Adminov",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@SMARTHOMEAPP.BG",
-                            PasswordHash = "AQAAAAIAAYagAAAAECWvEYW2sTeoxrKpMHkA6njuBacUYEHaAYcNWrG1LmLmK6/esIJJ5HMQFsTGOey9vQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI1bwe21lwJmN45pXImfxN4tG01C3Sqd2fUPlbs44mNKA+a/0HOsn592XRbBL01NpQ==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                            SecurityStamp = "de351baa-1010-4c3c-824f-6a0537200d4b",
+                            SecurityStamp = "3ab73b2f-4f29-4473-88f3-73c0e1f23eb1",
                             TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = "12345678-9abc-def0-1234-56789abcdef0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "34cde669-c519-43f6-9878-81304dffaf2c",
+                            ConcurrencyStamp = "64064c02-dd87-46b3-8abe-a1f8b29f54ed",
                             Email = "john.doe@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             LastName = "Doe",
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHN.DOE@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMUZNp0SB0CPe827PeFFyBIf2MoPwqRo+rgNdQnCqttigVHOQmc4O5R+OJ2R1gpvcQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEcCS8cTqaOPBSqtMjKnwjl/o9Rbf4PuBADogJDu36y6fEnfjk90DU+cHXPjIlScqQ==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGiRJA_5DqmVm7TxMV7E0IzYzUujF4p3SHPg&s",
-                            SecurityStamp = "0bc50798-a205-4566-a9d2-aed622300a28",
+                            SecurityStamp = "80d894db-bf3d-43cd-bc77-0661de5518eb",
                             TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = "abcdef12-3456-7890-abcd-ef1234567890",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f64f96ea-ea1c-44d1-ac23-34b1fb96d7b8",
+                            ConcurrencyStamp = "f2befc85-8b09-4198-b914-8edc76626641",
                             Email = "jane.smith@example.com",
                             EmailConfirmed = true,
                             FirstName = "Jane",
                             LastName = "Smith",
                             LockoutEnabled = false,
                             NormalizedEmail = "JANE.SMITH@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMz/BZccXWf/K2fZ9hUXY7DmRKzWeJpmkPKhw8aoGrFZ2EIyeLnFfpQ0T/7v6SW5ew==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFEh+eqDsbPPUi0rLIw8H6xAOLoP8bd8rin4PjUPpMMt66VOqP5SdlZ4PLhHp9BXOQ==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
-                            SecurityStamp = "528a8171-134d-4f5b-9c45-31dc46671971",
+                            SecurityStamp = "6e970bec-a386-4687-b863-2864a4f8b6dc",
                             TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = "fedcba98-7654-3210-fedc-ba9876543210",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "74f4e23b-a2e4-4abb-ac83-9fcfd4fc6ffa",
+                            ConcurrencyStamp = "4f7bc459-66b4-4ab3-81cd-9edd0e911389",
                             Email = "guest@example.com",
                             EmailConfirmed = false,
                             FirstName = "Guest",
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "GUEST@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBA2MFqpCYN6NUaRDnXTgTm4zfqhVBAKVw1FSWPI+zsqEKnBp2VZ78wJ8fGovtaPfA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOF102VWcjO+VXNj9hASfWFerqF5Ce/KD7UiR57pOlCjO91OVwsDqq9EEJNImlrQaA==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-                            SecurityStamp = "8eef63e0-df6a-41d4-9d97-f8a662178ad9",
+                            SecurityStamp = "2ec4158f-f682-45de-a42b-ef5304710cd2",
                             TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = "11223344-5566-7788-99aa-bbccddeeff00",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c3726a87-290c-4265-a258-5c1648d213fd",
+                            ConcurrencyStamp = "eb884e75-6adc-4a15-94af-66f95484242c",
                             Email = "moderator@smarthomeapp.bg",
                             EmailConfirmed = true,
                             FirstName = "Mod",
                             LastName = "Erator",
                             LockoutEnabled = false,
                             NormalizedEmail = "MODERATOR@SMARTHOMEAPP.BG",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBQef0z4VWYJMDEKFndexhm2Fd4wO8QaB3kXKFfkY5iRNZiYXgWXnO1FM/7sGS/6Sw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMIYCbSRvTdl4nVmOSpjq0oi/3MqFd1oENqFPo7vZ0tAS/3BFt8c4sMfZsEo4vxq+Q==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-                            SecurityStamp = "0aad7da3-eabf-4d3b-a2a5-36a74d813a30",
+                            SecurityStamp = "350d4573-7e7d-4263-9319-f4bd560fb13f",
                             TwoFactorEnabled = false
                         });
                 });
@@ -527,7 +531,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "c5a8a95c-0fe5-4f7d-9e46-0ad9fabf78ec",
                             Category = 0,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8548),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1467),
                             Description = "A high-definition doorbell camera with night vision and motion detection.",
                             ImageUrl = "https://m.media-amazon.com/images/I/611pxr2ITgL.jpg",
                             Name = "Smart Doorbell Camera",
@@ -540,7 +544,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "d39a7ae3-78c5-40ae-8569-34a0454dc909",
                             Category = 1,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8571),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1474),
                             Description = "Color-changing LED light bulbs controllable via app or voice commands.",
                             ImageUrl = "https://cdn.shopify.com/s/files/1/0024/9803/5810/products/597853-Product-0-I-637940195577281576.jpg?v=1658439198",
                             Name = "Smart LED Light Bulbs (4-Pack)",
@@ -553,7 +557,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "40941ea9-019c-415c-a101-9ccbc93a07d6",
                             Category = 2,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8576),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1477),
                             Description = "A programmable thermostat that learns your heating and cooling preferences.",
                             ImageUrl = "https://engocontrols.com/wp-content/uploads/2022/07/E901WIFI-2000x2000-1_strona_-min.png",
                             Name = "WiFi Thermostat",
@@ -566,7 +570,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "54a7eca8-ed42-4444-8522-d5a00310ed62",
                             Category = 3,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8579),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1485),
                             Description = "Refrigerator with touch screen, interior cameras, and WiFi connectivity.",
                             ImageUrl = "https://www.lifewire.com/thmb/Ib9NmsHdQ4q236zqBVxnsNYTIHA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/samsung-ha-ref-rf56k9540sr-family-hub-overview-5aa18f0e18ba010037c023a5.jpg",
                             Name = "Smart Refrigerator",
@@ -579,7 +583,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "800a6ca2-3027-4a0f-ae72-0156405a6a58",
                             Category = 4,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8584),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1488),
                             Description = "Voice-activated smart speaker with high-fidelity sound and assistant integration.",
                             ImageUrl = "https://cdn.aarp.net/content/dam/aarpe/en/home/home-family/personal-technology/info-2019/smart-speaker-uses/_jcr_content/root/container_main/container_body_main/container_body1/container_body_cf/container_image/articlecontentfragment/cfimage.coreimg.50.932.jpeg/content/dam/aarp/home-and-family/personal-technology/2019/10/1140-smart-speaker-functions.jpg",
                             Name = "Smart Speaker",
@@ -592,7 +596,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "a2fa3f78-c2ce-44ae-8b3f-402f54563b30",
                             Category = 5,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8588),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1491),
                             Description = "Smart plug that monitors energy usage of connected devices in real-time.",
                             ImageUrl = "https://static.independent.co.uk/2023/01/10/16/best%20energy%20monitors%20Indybest%20copy.jpg",
                             Name = "Energy Monitor Plug",
@@ -605,7 +609,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "668c6a85-f13f-43e9-b898-64d210b1cd45",
                             Category = 6,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8591),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1493),
                             Description = "WiFi-enabled robot vacuum with auto-charge and scheduling capabilities.",
                             ImageUrl = "https://crowncleaners.org.uk/wp-content/uploads/2024/08/Robot_Vacuum_Cleaner-feature-image-blog.jpg",
                             Name = "Robot Vacuum Cleaner",
@@ -618,7 +622,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "7be0663a-6953-44a8-9d06-80f1d72ce6b3",
                             Category = 7,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8595),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1495),
                             Description = "Waterproof fitness tracker with heart rate monitor and sleep tracking.",
                             ImageUrl = "https://s13emagst.akamaized.net/products/62903/62902367/images/res_b892254d28f050b61467aa3472854e47.jpg",
                             Name = "Smart Fitness Tracker",
@@ -631,7 +635,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "b109e70a-6b64-489f-a216-1d407abcf02f",
                             Category = 8,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8600),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1558),
                             Description = "Central hub to control and integrate all smart home devices.",
                             ImageUrl = "https://smartechdaily.com/wp-content/uploads/2024/05/19690_Generated_Image-1024x585.webp",
                             Name = "Smart Home Hub",
@@ -644,7 +648,7 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                             Id = "398a846c-2b2c-4b01-90f2-55d342268673",
                             Category = 9,
                             CreatorId = "27d78708-8671-4b05-bd5e-17aa91392224",
-                            DateCreated = new DateTime(2025, 1, 7, 0, 9, 36, 789, DateTimeKind.Utc).AddTicks(8607),
+                            DateCreated = new DateTime(2025, 1, 6, 23, 8, 42, 395, DateTimeKind.Utc).AddTicks(1562),
                             Description = "Weather-based sprinkler system for efficient garden watering.",
                             ImageUrl = "https://i.pcmag.com/imagery/reviews/05VIJDsjiZiHbe0MImRiYLr-1..v1569469978.jpg",
                             Name = "Smart Sprinkler System",
@@ -688,227 +692,227 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "24890be7-0d09-4f48-84ec-42e00ad440b0",
+                            Id = "b389a788-0b47-4586-9a02-77a4189c8d19",
                             Comment = "I love how easy it is to set up this doorbell camera. The image quality is superb.",
                             ProductId = "c5a8a95c-0fe5-4f7d-9e46-0ad9fabf78ec",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 28, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3130),
+                            ReviewDate = new DateTime(2024, 12, 27, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2189),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "bfd8bafc-0eee-4222-9463-126735337714",
+                            Id = "b49681ea-8e20-4197-b850-b7fe8c9ad27b",
                             Comment = "The refrigerator is sleek, but I think it's overpriced for the features.",
                             ProductId = "54a7eca8-ed42-4444-8522-d5a00310ed62",
                             Rating = 3,
-                            ReviewDate = new DateTime(2024, 12, 23, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3139),
+                            ReviewDate = new DateTime(2024, 12, 22, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2193),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "2ae6d013-2fe4-4acd-83c3-2c2cddf92cdc",
+                            Id = "df61149a-8b6c-4b1b-9c31-59cf01a74a35",
                             Comment = "A must-have fitness tracker for anyone serious about health.",
                             ProductId = "7be0663a-6953-44a8-9d06-80f1d72ce6b3",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 18, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3142),
+                            ReviewDate = new DateTime(2024, 12, 17, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2195),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "1688ffe5-99e0-43ca-a891-802589ab444a",
+                            Id = "339eba07-934b-4083-8c09-6a37c82db243",
                             Comment = "Fun to use and great for parties! The color-changing feature is amazing.",
                             ProductId = "d39a7ae3-78c5-40ae-8569-34a0454dc909",
                             Rating = 5,
-                            ReviewDate = new DateTime(2025, 1, 2, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3146),
+                            ReviewDate = new DateTime(2025, 1, 1, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2197),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "44306025-04df-43da-828f-eb6114e858c4",
+                            Id = "616dc39e-0291-4f52-8df2-671dcdfa528b",
                             Comment = "The robot vacuum works well on carpets and tiles but struggles with edges.",
                             ProductId = "668c6a85-f13f-43e9-b898-64d210b1cd45",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 26, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3149),
+                            ReviewDate = new DateTime(2024, 12, 25, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2201),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "3988be9e-ef31-4cea-9973-fa7256767aca",
+                            Id = "02a63382-10ad-43d2-a9c6-3fa5608d60e6",
                             Comment = "I saved so much energy with this plug. The real-time monitoring is awesome.",
                             ProductId = "a2fa3f78-c2ce-44ae-8b3f-402f54563b30",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 20, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3157),
+                            ReviewDate = new DateTime(2024, 12, 19, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2204),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "184f8b14-c08a-4391-8e13-889b9b53929a",
+                            Id = "8e985a7c-7b1d-4a21-8518-6290ddf6231d",
                             Comment = "This thermostat was a game-changer for our energy bills.",
                             ProductId = "40941ea9-019c-415c-a101-9ccbc93a07d6",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 13, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3160),
+                            ReviewDate = new DateTime(2024, 12, 12, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2206),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "f05c55fc-d304-4afd-a470-31af5c55d23f",
+                            Id = "8ea33342-47be-466e-90c7-edaa79b3f27f",
                             Comment = "The weather-based feature works like a charm for my garden.",
                             ProductId = "398a846c-2b2c-4b01-90f2-55d342268673",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 30, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(3162),
+                            ReviewDate = new DateTime(2024, 12, 29, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2207),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "d9a7a73b-3f70-4e2f-a05f-463447223fe4",
+                            Id = "64b700b0-d702-4c04-89b0-e9d11e36eee5",
                             Comment = "The hub has some lag when controlling multiple devices.",
                             ProductId = "b109e70a-6b64-489f-a216-1d407abcf02f",
                             Rating = 3,
-                            ReviewDate = new DateTime(2024, 12, 8, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4174),
+                            ReviewDate = new DateTime(2024, 12, 7, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2210),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "23e41b37-e5d2-47de-985b-9fd82d0282d6",
+                            Id = "1dd3a059-c0d3-4289-8e22-894d4ad6638f",
                             Comment = "The night vision is good, but the motion detection can be too sensitive.",
                             ProductId = "c5a8a95c-0fe5-4f7d-9e46-0ad9fabf78ec",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 24, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4180),
+                            ReviewDate = new DateTime(2024, 12, 23, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2212),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "43019502-5880-4f62-9460-e71c07a211bd",
+                            Id = "b5981f74-056f-4fe9-8383-c304c30e9b87",
                             Comment = "Perfect for busy people. It cleans thoroughly and docks automatically.",
                             ProductId = "668c6a85-f13f-43e9-b898-64d210b1cd45",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 18, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4183),
+                            ReviewDate = new DateTime(2024, 12, 17, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2213),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "f0dc505f-8c1f-402c-9b07-bd0e280af298",
+                            Id = "78db4c18-bf80-44b1-9de7-68238a042306",
                             Comment = "Great design, but I wish the touch screen was more responsive.",
                             ProductId = "54a7eca8-ed42-4444-8522-d5a00310ed62",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 16, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4186),
+                            ReviewDate = new DateTime(2024, 12, 15, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2215),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "00c37598-fdbf-465f-b5bc-3864846d5e57",
+                            Id = "ec1c3220-b536-439e-8d26-84837a8b1562",
                             Comment = "The lights are fantastic, and the app is super intuitive.",
                             ProductId = "d39a7ae3-78c5-40ae-8569-34a0454dc909",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 31, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4189),
+                            ReviewDate = new DateTime(2024, 12, 30, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2219),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "2e62c9d4-6793-41c1-b5d1-f98b5ebc791d",
+                            Id = "9b77bb72-df97-4a9f-95b9-418882e4970f",
                             Comment = "Accurate sleep tracking, but the battery life is shorter than expected.",
                             ProductId = "7be0663a-6953-44a8-9d06-80f1d72ce6b3",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 27, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4198),
+                            ReviewDate = new DateTime(2024, 12, 26, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2220),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "1e1cd348-5fcc-4ae6-9063-18d2159886c2",
+                            Id = "ffaa9ce9-7509-4538-b831-a554cd0abd38",
                             Comment = "Works well for basic needs, but advanced users may want more features.",
                             ProductId = "b109e70a-6b64-489f-a216-1d407abcf02f",
                             Rating = 3,
-                            ReviewDate = new DateTime(2024, 12, 22, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4202),
+                            ReviewDate = new DateTime(2024, 12, 21, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2222),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "c896daca-40b1-4268-a9eb-f76aae11e181",
+                            Id = "dd69cb69-ec1f-4365-83ef-6a75052ff0f8",
                             Comment = "Easy to install and very efficient for garden watering.",
                             ProductId = "398a846c-2b2c-4b01-90f2-55d342268673",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 29, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4205),
+                            ReviewDate = new DateTime(2024, 12, 28, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2224),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "c0b628b8-4747-4631-be25-ee4f5d59958e",
+                            Id = "0588bdc8-5d86-47bd-bb77-bcef1b3e2ec6",
                             Comment = "This doorbell camera works great! The motion detection is very accurate.",
                             ProductId = "c5a8a95c-0fe5-4f7d-9e46-0ad9fabf78ec",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 28, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4207),
+                            ReviewDate = new DateTime(2024, 12, 27, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2225),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "f7665340-d5b5-4863-bb55-75e8bff9318b",
+                            Id = "72dcba16-179b-44f1-8002-4075767cd96e",
                             Comment = "The lights are very bright and the app is easy to use.",
                             ProductId = "d39a7ae3-78c5-40ae-8569-34a0454dc909",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 18, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4209),
+                            ReviewDate = new DateTime(2024, 12, 17, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2227),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "c75da321-7203-4967-9bc7-297cae1380a6",
+                            Id = "be549113-2b62-49bd-98b8-c459082ab75c",
                             Comment = "A bit pricey, but I love how it learns my preferences!",
                             ProductId = "40941ea9-019c-415c-a101-9ccbc93a07d6",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 23, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4215),
+                            ReviewDate = new DateTime(2024, 12, 22, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2230),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "7eaf132e-60e9-44ab-9b42-b221f9257f1b",
+                            Id = "526ca0fb-f006-4801-8b90-b6c05473a842",
                             Comment = "The screen is impressive, but the cooling performance could be better.",
                             ProductId = "54a7eca8-ed42-4444-8522-d5a00310ed62",
                             Rating = 3,
-                            ReviewDate = new DateTime(2025, 1, 2, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4218),
+                            ReviewDate = new DateTime(2025, 1, 1, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2232),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "d0820953-9257-48e8-999e-845c3289a98c",
+                            Id = "fd7d1cfd-b18e-48bd-a29c-40f45e7b1e94",
                             Comment = "This vacuum cleaner has saved me so much time. Highly recommend!",
                             ProductId = "668c6a85-f13f-43e9-b898-64d210b1cd45",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 30, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4221),
+                            ReviewDate = new DateTime(2024, 12, 29, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2235),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         },
                         new
                         {
-                            Id = "c85d3445-4662-4907-86e9-5d206be3cebf",
+                            Id = "62a24c8e-85d4-4153-bab8-ee90431dcfc0",
                             Comment = "Great for tracking my workouts, but the strap feels a bit cheap.",
                             ProductId = "7be0663a-6953-44a8-9d06-80f1d72ce6b3",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 26, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4228),
+                            ReviewDate = new DateTime(2024, 12, 25, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2237),
                             UserId = "abcdef12-3456-7890-abcd-ef1234567890"
                         },
                         new
                         {
-                            Id = "20e27c83-3a3b-43a5-9289-8b65b38fe708",
+                            Id = "9204bd35-a297-4304-a58a-e03b5d46fac8",
                             Comment = "Good hub, but it doesn't support some devices I own.",
                             ProductId = "b109e70a-6b64-489f-a216-1d407abcf02f",
                             Rating = 3,
-                            ReviewDate = new DateTime(2024, 12, 20, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4231),
+                            ReviewDate = new DateTime(2024, 12, 19, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2239),
                             UserId = "11223344-5566-7788-99aa-bbccddeeff00"
                         },
                         new
                         {
-                            Id = "f9274a2f-a5bf-41d9-8d87-b194bb39967b",
+                            Id = "2bff549c-c37d-49b6-b4f9-4228036c4103",
                             Comment = "The sprinkler system works well, but setup was confusing.",
                             ProductId = "398a846c-2b2c-4b01-90f2-55d342268673",
                             Rating = 4,
-                            ReviewDate = new DateTime(2024, 12, 16, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4233),
+                            ReviewDate = new DateTime(2024, 12, 15, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2240),
                             UserId = "fedcba98-7654-3210-fedc-ba9876543210"
                         },
                         new
                         {
-                            Id = "6769cba7-2b20-45f5-977b-11b92af48c6d",
+                            Id = "0ff9f0e8-305b-4895-acff-430f76e9f2c1",
                             Comment = "Simple to use and very informative. A must-have for saving energy.",
                             ProductId = "a2fa3f78-c2ce-44ae-8b3f-402f54563b30",
                             Rating = 5,
-                            ReviewDate = new DateTime(2024, 12, 8, 0, 9, 37, 99, DateTimeKind.Utc).AddTicks(4237),
+                            ReviewDate = new DateTime(2024, 12, 7, 23, 8, 42, 620, DateTimeKind.Utc).AddTicks(2242),
                             UserId = "12345678-9abc-def0-1234-56789abcdef0"
                         });
                 });
@@ -968,7 +972,9 @@ namespace SmartHomeAppliance.Infrastructure.Migrations
                 {
                     b.HasOne("SmartHomeAppliance.Infrastructure.Data.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -31,6 +31,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         [Required]
         public DateTime OrderDate { get; set; }
 
+        public string? StripePaymentIntentId { get; set; }
+
         public List<OrdersProducts> OrdersProducts { get; set; } = new();
     }
 }

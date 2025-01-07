@@ -19,7 +19,7 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         [StringLength(255)]
         public string Message { get; set; } = null!;
 
-        [Required]
+
         [ForeignKey(nameof(UserId))]
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
