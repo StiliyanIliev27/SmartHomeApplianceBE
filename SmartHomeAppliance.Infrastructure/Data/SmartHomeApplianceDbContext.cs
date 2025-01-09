@@ -17,6 +17,8 @@ namespace SmartHomeAppliance.Infrastructure.Data
         public DbSet<OrdersProducts> OrdersProducts { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Activity> Activities { get; set; } = null!;
+        public DbSet<Technician> Technicians { get; set; } = null!;
+        public DbSet<TechnicianProduct> TechniciansProducts { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,6 +30,7 @@ namespace SmartHomeAppliance.Infrastructure.Data
             builder.ApplyConfiguration(new RolesConfiguration());
             builder.ApplyConfiguration(new UsersConfiguration());
             builder.ApplyConfiguration(new UsersRolesConfiguration());
+            builder.ApplyConfiguration(new TechniciansProductsConfiguration());
 
             base.OnModelCreating(builder);
         }

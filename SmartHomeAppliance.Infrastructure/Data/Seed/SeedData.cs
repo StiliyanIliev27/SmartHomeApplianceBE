@@ -388,7 +388,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                 FirstName = "Admin",
                 LastName = "Adminov",
                 ProfilePictureUrl = "https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                PasswordHash = hasher.HashPassword(null!, "admin123")
+                PasswordHash = hasher.HashPassword(null!, "admin123"),
+                CreatedAt = DateTime.Parse("01-01-2025")
             };
 
             //Test users for reviews 
@@ -404,7 +405,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     FirstName = "John",
                     LastName = "Doe",
                     ProfilePictureUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGiRJA_5DqmVm7TxMV7E0IzYzUujF4p3SHPg&s",
-                    PasswordHash = hasher.HashPassword(null!, "password123")
+                    PasswordHash = hasher.HashPassword(null!, "password123"),
+                    CreatedAt = DateTime.Parse("01-01-2025")
                 },
 
                 // Regular User 2
@@ -417,7 +419,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     FirstName = "Jane",
                     LastName = "Smith",
                     ProfilePictureUrl = "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
-                    PasswordHash = hasher.HashPassword(null!, "securePass!456")
+                    PasswordHash = hasher.HashPassword(null!, "securePass!456"),
+                    CreatedAt = DateTime.Parse("01-01-2025")
                 },
 
                 // Guest User
@@ -430,7 +433,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     FirstName = "Guest",
                     LastName = "User",
                     ProfilePictureUrl = "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-                    PasswordHash = hasher.HashPassword(null!, "guestPassword123")
+                    PasswordHash = hasher.HashPassword(null!, "guestPassword123"),
+                    CreatedAt = DateTime.Parse("01-01-2025")
                 },
 
                 // Moderator User
@@ -443,7 +447,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Seed
                     FirstName = "Mod",
                     LastName = "Erator",
                     ProfilePictureUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-                    PasswordHash = hasher.HashPassword(null!, "modSecure789")
+                    PasswordHash = hasher.HashPassword(null!, "modSecure789"),
+                    CreatedAt = DateTime.Parse("01-01-2025")
                 }
             };
 

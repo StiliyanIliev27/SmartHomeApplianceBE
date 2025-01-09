@@ -12,5 +12,8 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         public string LastName { get; set; } = null!;
         public string ProfilePictureUrl { get; set; } = string.Empty;
         public DateTime? LastLoginDate { get; set; }
+
+        [Required]
+        public DateTime CreatedAt { get; set; }
     }
 }
