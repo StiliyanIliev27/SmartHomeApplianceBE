@@ -20,5 +20,9 @@ namespace SmartHomeAppliance.Core.Models.DTOs.Auth
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = null!;
         public IFormFile? ProfilePicture { get; set; }
+       
+        public bool IsTechnician { get; set; } = false;
+        public string? PhoneNumber { get; set; }
+        public string? City { get; set; }
     }
 }

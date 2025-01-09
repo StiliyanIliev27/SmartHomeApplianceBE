@@ -1,4 +1,5 @@
-﻿using SmartHomeAppliance.Core.Models.Responses;
+﻿using SmartHomeAppliance.Core.Models.DTOs.Profile;
+using SmartHomeAppliance.Core.Models.Responses;
 
 namespace SmartHomeAppliance.Core.Contracts
 {
@@ -6,5 +7,7 @@ namespace SmartHomeAppliance.Core.Contracts
     {
         Task<ApiResponse> GetUserByIdAsync(string userId);
         Task<string> GetUserEmailAsync(string userId);
+        Task<ApiResponse> GetUserProfileAsync(string userId);
+        Task<ApiResponse> UpdateProfileAsync(UpdateProfileRequestDto updateProfileDto, string userId);
     }
 }

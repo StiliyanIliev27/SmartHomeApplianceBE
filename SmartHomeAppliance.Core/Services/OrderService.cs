@@ -58,7 +58,7 @@ namespace SmartHomeAppliance.Core.Services
                 UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice,
-                PaymentStatus = PaymentStatus.Pending,
+                PaymentStatus = PaymentStatus.Pending
             };
 
             if (promCodePerc > 0)

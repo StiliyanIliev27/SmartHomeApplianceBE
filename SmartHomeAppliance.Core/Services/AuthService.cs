@@ -14,6 +14,7 @@ using static SmartHomeAppliance.Common.GlobalConstants.ActivityMessages;
 using SmartHomeAppliance.Core.Extensions;
 using SmartHomeAppliance.Infrastructure.Data.Enums;
 using SmartHomeAppliance.Infrastructure.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartHomeAppliance.Core.Services
 {
@@ -233,6 +234,8 @@ namespace SmartHomeAppliance.Core.Services
 
             var token = await jwtService.GenerateTokenAsync(user.Id); // Include user roles and other claims if needed
             var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+            var isTechnician = await repository.AllReadOnly<Technician>()
+                .Where(t => t.UserId == user.Id).AnyAsync();
 
             activity = ActivityExtensions.CreateActivity(
                 type: ActivityType.UserLogin,
@@ -250,7 +253,7 @@ namespace SmartHomeAppliance.Core.Services
             await repository.SaveChangesAsync();
 
             apiResponse.StatusCode = 200;
-            apiResponse.Result = new { token, user, isAdmin };
+            apiResponse.Result = new { token, user, isAdmin, isTechnician };
             apiResponse.IsSuccess = true;
 
             return apiResponse;
@@ -280,8 +283,20 @@ namespace SmartHomeAppliance.Core.Services
                 LastName = registerModel.LastName,
                 UserName = registerModel.Email,
                 Email = registerModel.Email,
-                ProfilePictureUrl = profilePictureUrl
+                ProfilePictureUrl = profilePictureUrl,
+                CreatedAt = DateTime.Now
             };
+
+            if(registerModel.IsTechnician)
+            {
+                var technician = new Technician
+                {
+                    PhoneNumber = registerModel.PhoneNumber!,
+                    City = registerModel.City!,
+                    UserId = user.Id                
+                };
+                await repository.AddAsync(technician);
+            }
 
             // 3. Create the user in the database first
             var result = await userManager.CreateAsync(user, registerModel.Password);
@@ -333,6 +348,8 @@ namespace SmartHomeAppliance.Core.Services
         private async Task<UserResponseDto> MapUserToUserResponseDtoAsync(ApplicationUser user)
         {
             var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+            var isTechnician = await repository.AllReadOnly<Technician>()
+                .Where(t => t.UserId == user.Id).AnyAsync();
             return new UserResponseDto()
             {
                 Id = user.Id,
@@ -340,7 +357,8 @@ namespace SmartHomeAppliance.Core.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 ProfilePictureUrl = user.ProfilePictureUrl,
-                IsAdmin = isAdmin
+                IsAdmin = isAdmin,
+                IsTechnician = isTechnician
             };
         }
 

@@ -31,6 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IImageStorageService, ImageStorageService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IChatBotService, ChatBotService>();
+            services.AddScoped<ITechnicianService, TechnicianService>();
 
             return services;
         }

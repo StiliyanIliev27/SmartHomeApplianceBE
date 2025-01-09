@@ -13,5 +13,7 @@
         public string ProfilePictureUrl { get; set; } = string.Empty;
 
         public bool IsAdmin { get; set; }
+
+        public bool IsTechnician { get; set; }
     }
 }
