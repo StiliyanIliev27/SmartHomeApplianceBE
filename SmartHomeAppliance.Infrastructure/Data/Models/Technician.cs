@@ -20,6 +20,12 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         public string City { get; set; } = null!;
 
         [Required]
+        public string Long { get; set; } = null!;
+
+        [Required]
+        public string Lat { get; set; } = null!;
+
+        [Required]
         [ForeignKey(nameof(UserId))]
         public string UserId { get; set; } = null!;
         public ApplicationUser? User { get; set; }

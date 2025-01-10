@@ -9,5 +9,7 @@ namespace SmartHomeAppliance.Core.Models.DTOs.Profile
         public IFormFile? ProfileImage { get; set; }
         public string? PhoneNumber { get; set; }
         public string? City { get; set; }
+        public string? Lat { get; set; }
+        public string? Long { get; set; }
     }
 }

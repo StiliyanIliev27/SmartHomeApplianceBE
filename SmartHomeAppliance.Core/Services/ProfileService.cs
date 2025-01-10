@@ -64,6 +64,16 @@ namespace SmartHomeAppliance.Core.Services
             {
                 userProfile.PhoneNumber = technician.PhoneNumber;
                 userProfile.City = technician.City;
+                userProfile.Products = await repository.AllReadOnly<TechnicianProduct>()
+                    .Where(tp => tp.TechnicianId == technician.Id)
+                    .Include(tp => tp.Product)
+                    .Select(tp => new TechnicianProductForProfileDto()
+                    {
+                        ProductName = tp.Product.Name,
+                        ProductId = tp.ProductId,
+                        ProductImage = tp.Product.ImageUrl,
+                        InstallationPrice = tp.InstallationPrice
+                    }).ToListAsync();
             }
 
             var month = GetMonthName(user.CreatedAt.Month);
