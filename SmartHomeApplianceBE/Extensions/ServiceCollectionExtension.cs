@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OpenAI.Chat;
 using SmartHomeAppliance.Common.Settings;
 using SmartHomeAppliance.Core.Contracts;
 using SmartHomeAppliance.Core.Models.DTOs.Product;
@@ -29,6 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IReviewService, SmartHomeAppliance.Core.Services.ReviewService>();
             services.AddScoped<IImageStorageService, ImageStorageService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IChatBotService, ChatBotService>();
 
             return services;
         }
@@ -43,6 +45,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<StripeSettings>(config.GetSection("Stripe"));
             StripeConfiguration.ApiKey = config["Stripe:SecretKey"];
+
+            services.AddSingleton(new ChatClient(model: "gpt-4o-mini", config.GetValue<string>("OpenAI:ApiKey")));
 
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 

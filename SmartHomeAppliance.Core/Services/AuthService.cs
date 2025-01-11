@@ -10,7 +10,10 @@ using SmartHomeAppliance.Core.Models.Responses;
 using SmartHomeAppliance.Infrastructure.Data.Models;
 using MailKit.Net.Smtp;
 using static SmartHomeAppliance.Common.CustomErrors.GlobalErrors;
-using System.IdentityModel.Tokens.Jwt;
+using static SmartHomeAppliance.Common.GlobalConstants.ActivityMessages;
+using SmartHomeAppliance.Core.Extensions;
+using SmartHomeAppliance.Infrastructure.Data.Enums;
+using SmartHomeAppliance.Infrastructure.Common;
 
 namespace SmartHomeAppliance.Core.Services
 {
@@ -22,11 +25,12 @@ namespace SmartHomeAppliance.Core.Services
         private readonly IEmailService emailService;
         private readonly IImageStorageService imageStorageService;
         private readonly ILogger<AuthService> logger;
+        private readonly IRepository repository;
         private ApiResponse apiResponse;
 
         public AuthService(UserManager<ApplicationUser> userManager, IJwtService jwtService, 
             IConfiguration configuration, IEmailService emailService, IImageStorageService imageStorageService, 
-            ILogger<AuthService> logger)
+            ILogger<AuthService> logger, IRepository repository)
         {
             this.userManager = userManager;
             this.jwtService = jwtService;
@@ -35,6 +39,7 @@ namespace SmartHomeAppliance.Core.Services
             this.emailService = emailService;
             this.imageStorageService = imageStorageService;
             this.logger = logger;
+            this.repository = repository;
         }
 
         public async Task<ApiResponse> ResetPasswordAsync(ResetPasswordDTO newPasswordModel)
@@ -65,6 +70,19 @@ namespace SmartHomeAppliance.Core.Services
                 apiResponse.IsSuccess = true;
                 apiResponse.StatusCode = 200;
                 apiResponse.Message = $"User with email {user.Email} successfully updated his/her password!";
+
+                var activity = ActivityExtensions.CreateActivity(
+                    type: ActivityType.UserChangedPassword,
+                    messageTemplate: UserPasswordChanged,
+                    userId: user.Id,
+                    entityId: user.Id,
+                    entityType: EntityType.User,
+                    parameters: ("email", user.Email!)
+                );
+
+                await repository.AddAsync(activity);
+                await repository.SaveChangesAsync();
+
                 return apiResponse;
             }
             catch(Exception ex)
@@ -176,13 +194,33 @@ namespace SmartHomeAppliance.Core.Services
         public async Task<ApiResponse> LoginAsync(LoginDTO loginModel)
         {
             var user = await userManager.FindByEmailAsync(loginModel.Email);
+            Activity activity;
 
             if (user is null || !await userManager.CheckPasswordAsync(user, loginModel.Password))
             {
                 apiResponse.ErrorMessages.Add("Email or password is incorrect!");
                 apiResponse.IsSuccess = false;
                 apiResponse.StatusCode = 400;
-                return apiResponse;
+                
+                try
+                {
+                    activity = ActivityExtensions.CreateActivity(
+                    type: ActivityType.UserLogin,
+                    messageTemplate: UserLoginFailed,
+                    userId: user?.Id ?? "Anonymous user",
+                    entityId: user?.Id ?? "Anonymous user",
+                    entityType: EntityType.User,
+                    parameters: ("email", loginModel.Email));
+
+                    await repository.AddAsync(activity);
+                    await repository.SaveChangesAsync();
+
+                    return apiResponse;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             if (!user.EmailConfirmed)
@@ -194,9 +232,25 @@ namespace SmartHomeAppliance.Core.Services
             }
 
             var token = await jwtService.GenerateTokenAsync(user.Id); // Include user roles and other claims if needed
+            var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+
+            activity = ActivityExtensions.CreateActivity(
+                type: ActivityType.UserLogin,
+                messageTemplate: UserLoginSuccess,
+                userId: user.Id,
+                entityId: user.Id,
+                entityType: EntityType.User,
+                parameters: ("email", user.Email!)
+            );
+
+            user.LastLoginDate = DateTime.Now;
+            await userManager.UpdateAsync(user);
+
+            await repository.AddAsync(activity);
+            await repository.SaveChangesAsync();
 
             apiResponse.StatusCode = 200;
-            apiResponse.Result = new { token, user };
+            apiResponse.Result = new { token, user, isAdmin };
             apiResponse.IsSuccess = true;
 
             return apiResponse;
@@ -256,6 +310,18 @@ namespace SmartHomeAppliance.Core.Services
                 return apiResponse;
             }
 
+            var activity = ActivityExtensions.CreateActivity(
+                type: ActivityType.UserRegistration,
+                messageTemplate: UserRegistrationSuccess,
+                userId: user.Id,
+                entityId: user.Id,
+                entityType: EntityType.User,
+                parameters: ("email", user.Email)
+            );
+
+            await repository.AddAsync(activity);
+            await repository.SaveChangesAsync();
+
             // Step 6: Return response
             apiResponse.StatusCode = 201;
             apiResponse.Result = new { Message = "Please check your email to confirm your account." };
@@ -264,16 +330,35 @@ namespace SmartHomeAppliance.Core.Services
             return apiResponse;
         }
 
-        private UserResponseDto MapUserToUserResponseDto(ApplicationUser user)
+        private async Task<UserResponseDto> MapUserToUserResponseDtoAsync(ApplicationUser user)
         {
+            var isAdmin = await userManager.IsInRoleAsync(user, "Admin");
             return new UserResponseDto()
             {
                 Id = user.Id,
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                ProfilePictureUrl = user.ProfilePictureUrl
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                IsAdmin = isAdmin
             };
+        }
+
+        public async Task<ApiResponse> GetCurrentUserAsync(string userId)
+        {
+            var user = await repository.GetByIdAsync<ApplicationUser>(userId);
+            if(user is null)
+            {
+                apiResponse.ErrorMessages.Add(UserNotFound);
+                apiResponse.IsSuccess = false;
+                apiResponse.StatusCode = 404;
+                return apiResponse;
+            }
+
+            apiResponse.Result = await MapUserToUserResponseDtoAsync(user);
+            apiResponse.IsSuccess = true;
+            apiResponse.StatusCode = 200;
+            return apiResponse;
         }
     }
 }

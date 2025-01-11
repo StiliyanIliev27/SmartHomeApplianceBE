@@ -23,10 +23,15 @@ namespace SmartHomeAppliance.Infrastructure.Data.Models
         public decimal TotalPrice { get; set; }
 
         [Required]
-        public Status Status { get; set; } = Status.Pending;
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+
+        [Required]
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
 
         [Required]
         public DateTime OrderDate { get; set; }
+
+        public string? StripePaymentIntentId { get; set; }
 
         public List<OrdersProducts> OrdersProducts { get; set; } = new();
     }

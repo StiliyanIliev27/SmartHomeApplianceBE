@@ -16,6 +16,7 @@ namespace SmartHomeAppliance.Infrastructure.Data
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<OrdersProducts> OrdersProducts { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<Activity> Activities { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

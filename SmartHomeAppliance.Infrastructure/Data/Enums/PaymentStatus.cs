@@ -1,9 +1,10 @@
 ﻿namespace SmartHomeAppliance.Infrastructure.Data.Enums
 {
-    public enum Status
+    public enum PaymentStatus
     {
         Pending,
         Completed, 
-        Cancelled
+        Cancelled,
+        Failed
     }
 }

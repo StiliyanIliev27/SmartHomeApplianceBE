@@ -22,6 +22,40 @@ namespace SmartHomeAppliance.Core.Services
             this.logger = logger;
         }
 
+        private async Task<bool> SendEmailAsync(EmailOptionsResponse emailOptions, string toEmail, string subject, string htmlBody)
+        {
+            var mailMessage = new MimeMessage();
+            mailMessage.From.Add(MailboxAddress.Parse(emailOptions.FromEmail));
+            mailMessage.To.Add(MailboxAddress.Parse(toEmail));
+            mailMessage.Subject = subject;
+            mailMessage.Body = new TextPart(TextFormat.Html)
+            {
+                Text = htmlBody
+            };
+
+            try
+            {
+                using var smtp = new SmtpClient();
+
+                if (bool.TryParse(configuration["SMTP:BypassCertificateValidation"], out bool bypassCert) && bypassCert)
+                {
+                    smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                }
+
+                smtp.Connect(emailOptions.Host, emailOptions.Port, SecureSocketOptions.SslOnConnect);
+                smtp.Authenticate(emailOptions.FromEmail, emailOptions.Password);
+                await smtp.SendAsync(mailMessage);
+                smtp.Disconnect(true);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send email to {Email}. Subject: {Subject}", toEmail, subject);
+                return false;
+            }
+        }
+
         private EmailOptionsResponse ConfigureEmailOptions()
         {
             var emailOptionsResponse = new EmailOptionsResponse();
@@ -120,42 +154,47 @@ namespace SmartHomeAppliance.Core.Services
             var templatePath = Path.Combine("Templates", "SuccessfulPurchase.html");
             var template = await File.ReadAllTextAsync(templatePath);
 
-
             var emailBody = template
                 .Replace("{LogoUrl}", "https://res.cloudinary.com/dqixe2hf5/image/upload/v1733177315/uuwkheeryeqc6doj9klt.jpg")
                 .Replace("{ViewMyOrders}", myOrdersLink);
 
-            var mailMessage = new MimeMessage();
-            mailMessage.From.Add(MailboxAddress.Parse(emailOptionsResponse.FromEmail));
-            mailMessage.To.Add(MailboxAddress.Parse(toEmail));
-            mailMessage.Subject = "Successful purchase - HomeCraft";
-            mailMessage.Body = new TextPart(TextFormat.Html)
+            return await SendEmailAsync(emailOptionsResponse, toEmail, "Successful purchase - HomeCraft", emailBody);
+        }
+
+        public async Task<bool> SendOrderCancelledAsync(string toEmail, string orderId)
+        {
+            var emailOptionsResponse = ConfigureEmailOptions();
+            if (!emailOptionsResponse.IsSuccess)
             {
-                Text = emailBody
-            };
-
-            try
-            {
-                using var smtp = new SmtpClient();
-
-                // Conditionally bypass certificate validation for development
-                if (bool.TryParse(configuration["SMTP:BypassCertificateValidation"], out bool bypassCert) && bypassCert)
-                {
-                    smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                }
-
-                smtp.Connect(emailOptionsResponse.Host, emailOptionsResponse.Port, SecureSocketOptions.SslOnConnect);
-                smtp.Authenticate(emailOptionsResponse.FromEmail, emailOptionsResponse.Password);
-                await smtp.SendAsync(mailMessage);
-                smtp.Disconnect(true);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to send email.");
                 return false;
             }
+
+            var templatePath = Path.Combine("Templates", "CancelledOrder.html");
+            var template = await File.ReadAllTextAsync(templatePath);
+
+            var emailBody = template
+                .Replace("{LogoUrl}", "https://res.cloudinary.com/dqixe2hf5/image/upload/v1733177315/uuwkheeryeqc6doj9klt.jpg")
+                .Replace("{OrderId}", orderId);
+
+            return await SendEmailAsync(emailOptionsResponse, toEmail, "Order Cancelled - HomeCraft", emailBody);
+        }
+
+        public async Task<bool> SendPaymentFailedAsync(string toEmail, string orderId)
+        {
+            var emailOptionsResponse = ConfigureEmailOptions();
+            if (!emailOptionsResponse.IsSuccess)
+            {
+                return false;
+            }
+
+            var templatePath = Path.Combine("Templates", "PaymentFailed.html");
+            var template = await File.ReadAllTextAsync(templatePath);
+
+            var emailBody = template
+                .Replace("{LogoUrl}", "https://res.cloudinary.com/dqixe2hf5/image/upload/v1733177315/uuwkheeryeqc6doj9klt.jpg")
+                .Replace("{OrderId}", orderId);
+
+            return await SendEmailAsync(emailOptionsResponse, toEmail, "Payment Failed - HomeCraft", emailBody);
         }
     }
 }
