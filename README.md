@@ -3,7 +3,7 @@
 ![Screenshot 2025-01-07 025707](https://github.com/user-attachments/assets/ac7a8f5b-ab14-446f-8419-5e3928270797)
 
 ## 🎯 Overview
-SmartHub is a modern REST API for smart home appliances management built with ASP.NET Core. It provides a comprehensive set of features for e-commerce, user management, and product administration. 🚀
+HomeCraft is a modern REST API for smart home appliances management built with ASP.NET Core. It provides a comprehensive set of features for e-commerce, user management, and product administration. 🚀
 
 ## ⭐ Key Features
 
