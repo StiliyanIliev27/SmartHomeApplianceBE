@@ -1,4 +1,4 @@
-# 🏠 HomeCraft API - Your Smart Home Solution 🌟
+# 🏠 HomeCraft API - Your Smart Home Solution 🌟 
 
 ![Screenshot 2025-01-07 025707](https://github.com/user-attachments/assets/ac7a8f5b-ab14-446f-8419-5e3928270797)
 
